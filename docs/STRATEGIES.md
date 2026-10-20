@@ -1,7 +1,16 @@
-# Strategies — M2 pending
+# S1–S4 research engines
 
-Authoritative definitions: spec v1.1 sections 5–6. No strategy is implemented or validated in M0.
+Implemented in quant/features.py and quant/strategies.py against spec sections 5–6.
+S1 uses momentum/volatility ranks, top 15% and score >=70. S2 uses the previous
+20 highs and volumes, with current-low/ATR stop. S3 uses EMA20/50/200 pullback,
+RSI and raw bullish candle. S4 mean reversion is EXPERIMENTAL, 5/10-session holds.
 
-Planned independently versioned strategies: S1 Momentum Rank; S2 20-day Breakout + Volume; S3 Pullback in Uptrend; S4 Mean Reversion (EXPERIMENTAL).
+All active symbols retain scores or null, exclusions, exact source dates,
+features and stops. Ties break by symbol. Missing scores are not replaced with
+zero; unrelated strategies are not averaged. Config PATCH appends an immutable
+version. Scan identity includes dataset, feature and strategy engine hashes.
+No future known calendar date means informational signal only.
 
-Acceptance gates: point-in-time feature golden tests, prior-bar breakout window, warmup exclusions, deterministic universe percentiles, UNKNOWN on missing index/breadth, explanation provenance, no rankings from DEMO in real mode. No synthetic score or fake performance is shown in the shell.
+Golden tests cover EMA/ATR/RSI/warmup, adjustment continuity, previous-bar-only
+breakout windows, lifecycle membership, deterministic ranks and future
+perturbation. None of these strategies has demonstrated real-market alpha.

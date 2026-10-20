@@ -23,3 +23,9 @@ done
 [[ "$ready" == 1 ]] || { echo "API readiness failed; inspect .runtime/test-api.log"; exit 1; }
 QUANT_INTEGRATION=1 "$py" -m unittest discover -s apps/quant-worker/tests -v
 "$node_bin" tests/e2e/m0-smoke.mjs
+export API_URL=http://127.0.0.1:3000
+"$node_bin" tests/e2e/m1-smoke.mjs
+"$node_bin" tests/e2e/m2-smoke.mjs
+# Each suite uses the same admin/IP; allow the configured 60/minute throttle to reset.
+sleep 60
+"$node_bin" tests/e2e/m3-smoke.mjs

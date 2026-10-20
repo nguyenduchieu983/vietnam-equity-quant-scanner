@@ -1,3 +1,4 @@
+import { BacktestsController } from './backtests';
 import { Body, Controller, Get, HttpException, HttpStatus, Module, Param, ParseUUIDPipe, Post, Query, ServiceUnavailableException, UseGuards } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -7,6 +8,7 @@ import { Type } from 'class-transformer';
 import { Database } from './db';
 import { AuthController, AuthGuard } from './auth';
 import { mode, required, safeSort } from './config';
+import { ResearchController } from './research';
 
 class ResultsQuery {
   @Type(() => Number) @IsInt() @Min(1) @Max(100000) page = 1;
@@ -19,7 +21,7 @@ class ResultsQuery {
   @IsOptional() @IsString() @MaxLength(20) query?: string;
 }
 class IngestDto {
-  @IsIn(['fixture']) provider!: string;
+  @IsIn(['fixture', 'fixture_history']) provider!: string;
   @IsString() @MaxLength(128) idempotencyKey!: string;
 }
 @Controller()
@@ -50,10 +52,14 @@ class AppController {
       (SELECT max(session_date)::text FROM market_bars WHERE is_demo=$1) AS "latestSession",
       EXISTS(SELECT 1 FROM worker_heartbeats WHERE observed_at > now()-interval '30 seconds') AS worker`, [mode() === 'demo']);
     const redis = await this.db.redis.ping().then(() => true).catch(() => false);
-    return { ...result.rows[0], database: true, redis, isDemo: mode() === 'demo', milestone: 'M0' };
+    return { ...result.rows[0], database: true, redis, isDemo: mode() === 'demo', milestone: 'M3' };
   }
   @Get('market/regime')
-  regime() { return { regime: 'UNKNOWN', riskMultiplier: 0, reasons: ['FEATURE_ENGINE_NOT_IMPLEMENTED'], breadth50: null }; }
+  async regime() {
+    const result = await this.db.pool.query(`SELECT m.conditions_json FROM market_regimes m JOIN scan_runs s ON s.id=m.scan_run_id
+      WHERE s.is_demo=$1 ORDER BY s.session_date DESC,s.started_at DESC LIMIT 1`,[mode()==='demo']);
+    return result.rows[0]?.conditions_json ?? {regime:'UNKNOWN',riskMultiplier:0,reasons:['NO_COMPLETED_SCAN'],breadth50:null};
+  }
   @Get('scans')
   async scans(@Query() q: ResultsQuery) {
     const result = await this.db.pool.query('SELECT * FROM scan_runs WHERE is_demo=$1 ORDER BY session_date DESC, id LIMIT $2 OFFSET $3', [mode() === 'demo', q.limit, (q.page - 1) * q.limit]);
@@ -89,8 +95,8 @@ class AppController {
     try {
       await client.query('BEGIN');
       const job = await client.query(`INSERT INTO jobs(kind,idempotency_key,payload_json,is_demo)
-        VALUES('INGEST',$1,$2,true) ON CONFLICT(kind,idempotency_key,is_demo) DO UPDATE SET idempotency_key=excluded.idempotency_key RETURNING id,status`,
-      [dto.idempotencyKey, JSON.stringify({ provider: dto.provider })]);
+        VALUES($3,$1,$2,true) ON CONFLICT(kind,idempotency_key,is_demo) DO UPDATE SET idempotency_key=excluded.idempotency_key RETURNING id,status`,
+      [dto.idempotencyKey, JSON.stringify({ provider: dto.provider }), dto.provider === 'fixture_history' ? 'HISTORY' : 'INGEST']);
       await client.query("INSERT INTO audit_logs(actor,action,entity,entity_id) VALUES('admin','REQUEST_INGEST','jobs',$1)", [job.rows[0].id]);
       await client.query('COMMIT');
       return job.rows[0];
@@ -98,9 +104,14 @@ class AppController {
   }
   @Get('jobs/:id')
   async job(@Param('id', ParseUUIDPipe) id: string) {
-    const result = await this.db.pool.query('SELECT id,kind,status,attempts,error_code,created_at,finished_at FROM jobs WHERE id=$1 AND is_demo=$2', [id, mode() === 'demo']);
+    const result = await this.db.pool.query('SELECT id,kind,status,attempts,error_code,progress,result_json,created_at,finished_at FROM jobs WHERE id=$1 AND is_demo=$2', [id, mode() === 'demo']);
     if (!result.rowCount) throw new HttpException('Job not found', 404);
     return result.rows[0];
+  }
+  @Get('datasets')
+  async datasets() {
+    return (await this.db.pool.query(`SELECT id,name,content_hash,provider,is_demo,status,from_date,to_date,quality_json
+      FROM research_datasets WHERE is_demo=$1 ORDER BY created_at DESC LIMIT 50`, [mode() === 'demo'])).rows;
   }
   @Get('data-quality/issues')
   async issues(@Query() q: ResultsQuery) {
@@ -116,7 +127,7 @@ class AppController {
     } }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }])
   ],
-  controllers: [HealthController, AuthController, AppController],
+  controllers: [HealthController, AuthController, AppController, ResearchController, BacktestsController],
   providers: [Database, AuthGuard, { provide: APP_GUARD, useClass: ThrottlerGuard }]
 })
 export class AppModule {}

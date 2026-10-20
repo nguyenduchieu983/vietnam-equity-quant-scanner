@@ -1,4 +1,4 @@
-name: Native M0 checks
+name: Native M0-M3 checks
 on: [push, pull_request]
 jobs:
   native:
@@ -37,7 +37,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: native-m0-logs
+          name: native-research-logs
           path: |
             .runtime/test-api.log
             .runtime/test-worker.log
+            .runtime/m3-results.json

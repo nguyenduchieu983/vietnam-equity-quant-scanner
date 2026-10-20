@@ -1,0 +1,31 @@
+import 'dotenv/config';
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+const browser=await chromium.launch({headless:true,channel:process.env.BROWSER_CHANNEL??'msedge'});
+try{
+ const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});
+ const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(e.message);});
+ await page.goto('http://127.0.0.1:5173/lab');
+ await page.getByLabel('Mật khẩu quản trị').fill(process.env.SMOKE_ADMIN_PASSWORD);
+ await page.getByRole('button',{name:'Mở workspace'}).click();
+ await page.getByRole('button',{name:'Chạy backtest',exact:true}).click();
+ await page.getByRole('heading',{name:'Kết quả ngoài mẫu (sau phí / thuế)',exact:true}).waitFor({timeout:120000});
+ await page.locator('canvas').first().waitFor();
+ await page.getByRole('button',{name:'Nguồn gốc & giả định tái lập',exact:true}).click();
+ await page.locator('pre').filter({hasText:'reproducibilityHash'}).waitFor();
+ await page.getByRole('button',{name:'Nguồn gốc & giả định tái lập',exact:true}).click();
+ const downloadPromise=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Xuất kết quả JSON'}).click();
+ const download=await downloadPromise;
+ await download.saveAs('.runtime/browser-backtest.json');
+ const csvPromise=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Equity CSV',exact:true}).click();
+ await (await csvPromise).saveAs('.runtime/browser-equity.csv');
+ await page.getByRole('button',{name:'Chuyển giao diện sáng',exact:true}).click();
+ assert.equal(await page.locator('html').evaluate(el=>el.classList.contains('app-dark')),false);
+ await page.screenshot({path:'.runtime/lab-m3-light.png',fullPage:true,animations:'disabled'});
+ await page.getByRole('button',{name:'Chuyển giao diện tối',exact:true}).click();
+ await page.screenshot({path:'.runtime/lab-m3.png',fullPage:true,animations:'disabled'});
+ assert.deepEqual(errors,[]);
+ console.log('PASS M3 browser: real job, metrics, chart, ledger, provenance, JSON download.');
+}finally{await browser.close();}

@@ -6,7 +6,7 @@ Mô hình đang dùng:
 - Frontend Vite: Node 22 trên Windows, `http://127.0.0.1:5173`.
 - API NestJS và Python worker: process native trong WSL `Ubuntu-22.04`.
 - PostgreSQL/Redis: service native WSL. Database riêng `quant_m0`.
-- Không có broker thật. M0 chỉ có dữ liệu fixture DEMO.
+- Không có broker thật. M1–M3 chạy trên dữ liệu lịch sử tổng hợp DEMO.
 
 Máy này đã được chuẩn bị runtime Linux cô lập dưới `.runtime/`:
 `node-v22.19.0-linux-x64/bin/node` và `linux-venv/bin/python` (Python 3.12).
@@ -40,5 +40,8 @@ runtime Linux đã cài tại đường dẫn khác. Dependencies Python cài t�
 Logs: `.runtime/api.log`, `.runtime/worker.log`,
 `.runtime/web-windows.log`, `.runtime/web-windows-error.log`.
 
-Giao diện chưa phải sản phẩm M4: scanner chưa có engine; biểu đồ mã,
-Strategy Lab và Paper Portfolio ghi rõ milestone chưa triển khai.
+Scanner, biểu đồ mã và Strategy Lab đã chạy. 
+Paper Portfolio M4 chưa triển khai.
+
+Kiểm thử toàn bộ local: `.\infra\scripts\test-research-windows.ps1`.
+Mở `/lab`, chọn dataset và chiến lược, bấm Chạy backtest. Nếu chưa có dataset, nhập lịch sử DEMO ở Operations.

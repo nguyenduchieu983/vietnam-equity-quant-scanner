@@ -1,0 +1,24 @@
+{
+  "version": "illustrative-v1",
+  "verified": false,
+  "notice": "DEMO research assumptions, not verified exchange/broker execution rules.",
+  "effective_from": "2022-01-01",
+  "effective_to": "2027-01-01",
+  "board_lot": 100,
+  "settlement_sessions": 2,
+  "availability_offset_sessions": 1,
+  "sellable_policy": "T_PLUS_2_END_AVAILABLE_NEXT_SESSION_OPEN_ASSUMPTION",
+  "cash_policy": "NO_UNSETTLED_PROCEEDS_REUSE",
+  "participation": "0.05",
+  "position_cap": "0.20",
+  "sector_cap": "0.35",
+  "gross_cap": "0.80",
+  "cash_reserve": "0.10",
+  "risk_per_trade": "0.005",
+  "max_positions": 5,
+  "max_daily_entries": 2,
+  "ticks": {
+    "HOSE": [{"below": "10000", "tick": "10"}, {"below": "50000", "tick": "50"}, {"below": null, "tick": "100"}],
+    "HNX": [{"below": null, "tick": "100"}]
+  }
+}

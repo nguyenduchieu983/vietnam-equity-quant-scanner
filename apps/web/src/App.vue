@@ -17,7 +17,7 @@ const error = ref('');
 const nav = [
   { path: '/dashboard', icon: 'pi pi-th-large', label: 'Tổng quan', index: '01' },
   { path: '/scanner', icon: 'pi pi-filter', label: 'Scanner', index: '02' },
-  { path: '/symbols/DEMOA', icon: 'pi pi-chart-line', label: 'Phân tích mã', index: '03' },
+  { path: '/symbols/SIM00', icon: 'pi pi-chart-line', label: 'Phân tích mã', index: '03' },
   { path: '/lab', icon: 'pi pi-sliders-h', label: 'Strategy Lab', index: '04' },
   { path: '/portfolio', icon: 'pi pi-wallet', label: 'Paper Portfolio', index: '05' },
   { path: '/operations', icon: 'pi pi-server', label: 'Dữ liệu & vận hành', index: '06' }
@@ -39,7 +39,7 @@ async function login() {
         <RouterLink v-for="item in nav" :key="item.path" :to="item.path"><i :class="item.icon" /><span>{{ item.label }}</span><small>{{ item.index }}</small></RouterLink>
       </nav>
       <div class="sidebar-note"><i class="pi pi-shield" /><strong>Research only</strong><p>Phân tích cuối ngày.<br>Giao dịch mô phỏng có kiểm soát.</p><Tag value="NO LIVE EXECUTION" severity="secondary" /></div>
-      <div class="sidebar-footer"><span class="status-dot" /> M0 · Foundation <span>v0.1</span></div>
+      <div class="sidebar-footer"><span class="status-dot" /> Local research <span>v0.3</span></div>
     </aside>
     <div class="workspace">
       <header class="topbar"><div class="breadcrumb">WORKSPACE <span>/</span> {{ route.meta.title }}</div><div class="header-actions"><Tag value="EOD RESEARCH" severity="secondary" /><Button :icon="settings.dark ? 'pi pi-sun' : 'pi pi-moon'" text rounded :aria-label="settings.dark ? 'Chuyển giao diện sáng' : 'Chuyển giao diện tối'" @click="settings.dark = !settings.dark" /><Button v-if="token" icon="pi pi-sign-out" text aria-label="Đăng xuất" @click="token = ''" /></div></header>

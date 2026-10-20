@@ -13,10 +13,10 @@ async function load() {
   try { runs.value = (await api<Record<string, unknown>[]>('ingestion/runs')).data; }
   catch (e) { error.value = (e as Error).message; }
 }
-async function ingest() {
+async function ingest(provider = 'fixture_history') {
   busy.value = true; error.value = '';
   try {
-    const result = await api<{id:string;status:string}>('ingestion/runs', { provider: 'fixture', idempotencyKey: crypto.randomUUID() });
+    const result = await api<{id:string;status:string}>('ingestion/runs', { provider, idempotencyKey: crypto.randomUUID() });
     job.value = result.data.id;
     await check();
   } catch (e) { error.value = (e as Error).message; }
@@ -31,8 +31,8 @@ async function check() {
 onMounted(load);
 </script>
 <template>
-  <div class="page-heading"><div><div class="eyebrow">DATA CONTROL CENTER</div><h1>Dữ liệu & vận hành</h1><p>Theo dõi provenance, ingestion và job bền vững.</p></div><Button label="Nhập fixture DEMO" icon="pi pi-download" :loading="busy" @click="ingest" /></div>
-  <Message severity="warn">Provider thật chưa được bật. Cần xác minh quyền truy cập, hạn mức và corporate actions trước M1.</Message>
+  <div class="page-heading"><div><div class="eyebrow">DATA CONTROL CENTER</div><h1>Dữ liệu & vận hành</h1><p>Theo dõi provenance, ingestion và job bền vững.</p></div><Button label="Nhập lịch sử DEMO 2022–2026" icon="pi pi-download" :loading="busy" @click="ingest()" /></div>
+  <Message severity="warn">Provider thật chưa được bật. Cần xác minh quyền truy cập, hạn mức và corporate actions trước khi dùng dữ liệu thật.</Message>
   <Message v-if="error" severity="error">{{ error }}</Message>
   <div v-if="job" class="filter-toolbar"><span class="mono">Job {{ job }}</span><Tag :value="jobStatus" /><Button label="Kiểm tra job" icon="pi pi-refresh" severity="secondary" @click="check" /></div>
   <div class="section-heading"><h2>Lịch sử ingestion</h2><Button text label="Làm mới" icon="pi pi-refresh" @click="load" /></div>

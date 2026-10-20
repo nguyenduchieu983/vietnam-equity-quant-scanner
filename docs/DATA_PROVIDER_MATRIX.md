@@ -19,3 +19,8 @@ Sources:
 Before M1 real ingestion: capture authorization, API version, verified request/response samples, units, timezone, finality signal, revision policy, delisted coverage, missing-bar behavior, retry-after semantics, numeric rate/concurrency cap and legal retention. Never silently mix providers or adjusted/raw histories.
 
 PrimeVue verification: [installation](https://primevue.dev/installation/) and [styled themes](https://primevue.dev/theming/styled/) checked before implementation. Latest v5 displayed an invalid-license banner during visual QA. Final selection is **PrimeVue 4.5.5 + themes 2.0.3**, both declaring MIT in registry metadata and using the same `@primeuix/styled` 0.7.4 generation. Configuration follows [the v4 styled-mode documentation](https://v4.primevue.org/theming/styled/). No competing component library or license bypass is used.
+
+Local M1 history adapter: synthetic-history-v2, 8 invented stocks + synthetic
+VNINDEX, weekday sessions 2022-01-03..2026-10-19, delayed listing and delisting.
+Deterministic content hash and immutable quality snapshot; all labels DEMO.
+This is test data generated locally, not an additional market data provider.

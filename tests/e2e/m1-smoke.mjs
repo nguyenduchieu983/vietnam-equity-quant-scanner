@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { login, call, finish } from './research-helper.mjs';
+const token = await login();
+const job = await call(token,'ingestion/runs',{provider:'fixture_history',idempotencyKey:`m1-${Date.now()}`});
+const result = await finish(token, job);
+const datasets = await call(token,'datasets');
+const dataset = datasets.find(d=>d.id===result.datasetId);
+assert.equal(dataset.status,'COMPLETE');
+assert.equal(dataset.is_demo,true);
+assert.equal(dataset.quality_json.missing_bars,0);
+assert.equal(dataset.quality_json.delisted,1);
+assert.ok(dataset.quality_json.sessions>1200);
+console.log('PASS M1 native API -> durable job -> history import -> immutable dataset', dataset.id);

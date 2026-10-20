@@ -1,39 +1,30 @@
 # Quant VN — native equity research terminal
 
-Implementation of `VIETNAM_QUANT_SCANNER_CODEX_SPEC.md` v1.1 is **in progress**.
-Current deliverable is the **M0 foundation**, not the completed M0–M4 product.
+Spec v1.1 implementation: local **M1–M3 DEMO research workflow** is runnable.
+Vue 3 + TypeScript + PrimeVue 4/Aura, dark/light; NestJS; Python 3.12;
+native PostgreSQL/Redis. Linux production definitions use PM2/systemd/Nginx.
 
-Vue 3 + TypeScript + PrimeVue/Aura; NestJS API; Python 3.12 worker; PostgreSQL;
-Redis. Deployment files target native Ubuntu, PM2, systemd and Nginx.
-
-Implemented: authenticated overview, fixture ingestion, durable job queue, raw
-provenance, validation/idempotency, migration runner, empty scanner API/table,
-dark/light terminal shell and operational script drafts.
-
-Not implemented: live providers, feature/scanning engines, historical symbol
-charts, backtests, paper trading and full acceptance/performance/reboot tests.
-Later screens explicitly show their pending milestone; no fake results.
-
-For the current Windows machine, use [local Windows startup](docs/LOCAL_WINDOWS.md):
+Implemented: immutable synthetic history, quality checks, causal features,
+S1–S4 scanners with explanations, symbol charts, durable backtest jobs,
+settlement-aware portfolio simulation, OOS/walk-forward, metrics and CSV/JSON.
+No live broker execution. No real-market performance is claimed.
 
 ```powershell
 .\infra\scripts\dev-start-windows.ps1
+.\infra\scripts\test-research-windows.ps1
 ```
 
-The local frontend runs on Windows; backend/data services run natively in WSL.
-For a Linux server, start with [operations](docs/OPERATIONS.md), then
-[implementation status](docs/IMPLEMENTATION_STATUS.md) and
-[test report](docs/TEST_REPORT.md).
+Open http://127.0.0.1:5173/lab and log in with local `.env` value
+`SMOKE_ADMIN_PASSWORD`. First import DEMO history in Operations if needed.
+Choose dataset/strategy and run backtest. Defaults use 50m VND illustrative
+capital, separate train/validation/test periods and 30-session embargo.
 
-```bash
-node infra/scripts/init-demo-env.mjs
-# Ubuntu native dependencies + isolated demo DB must be prepared per runbook.
-bash infra/scripts/dev-start.sh
-bash infra/scripts/smoke-test.sh
-```
+Windows hosts Vite; API/worker/DB run natively in WSL Ubuntu 22.04. This is a
+launcher for the prepared local environment, not a clean Windows installer.
+See [Windows instructions](docs/LOCAL_WINDOWS.md), [status](docs/IMPLEMENTATION_STATUS.md),
+[test report](docs/TEST_REPORT.md), [methodology](docs/BACKTEST_METHODOLOGY.md).
 
-Frontend: `http://127.0.0.1:5173`. API documentation:
-`http://127.0.0.1:3000/api/docs` in development.
-
-DEMO fixtures are invented instruments and one invented session; never use them
-for investment decisions or production rankings. Not investment advice.
+Still open: licensed real-data adapter and incremental EOD scheduler, full-scale
+performance benchmark, paper portfolio M4, clean-server install and reboot
+acceptance. See [Linux runbook](docs/OPERATIONS.md) for native deployment scripts.
+Not investment advice.
