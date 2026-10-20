@@ -147,3 +147,20 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Quant VN local runtime and Python artifacts
+node_modules/
+dist/
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.runtime/
+coverage/
+*.log
+.idea/
+.env.*
+!.env.example

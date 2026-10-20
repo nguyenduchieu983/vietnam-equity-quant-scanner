@@ -1,0 +1,26 @@
+[Unit]
+Description=Quant VN durable job worker
+After=network-online.target postgresql.service redis-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=quant
+Group=quant
+WorkingDirectory=/opt/quant-vn/apps/quant-worker
+EnvironmentFile=/etc/quant-vn.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/quant-vn/apps/quant-worker/.venv/bin/python -m quant worker
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=1G
+CPUQuota=150%
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=Quant VN native PostgreSQL backup
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=quant
+Group=quant
+EnvironmentFile=/etc/quant-vn.env
+ExecStart=/bin/bash /opt/quant-vn/infra/scripts/backup-postgres.sh
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

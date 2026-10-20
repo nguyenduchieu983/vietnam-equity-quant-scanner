@@ -1,0 +1,11 @@
+{
+  "classification": "DEMO",
+  "notice": "Invented fixture instruments and prices. NOT Vietnamese market history. Single synthetic session.",
+  "expected_symbols": ["DEMOA", "DEMOB", "DEMOC"],
+  "bars": [
+    {"symbol":"DEMOA","exchange":"HOSE","kind":"stock","session_date":"2026-10-19","open":"20000","high":"20500","low":"19800","close":"20200","volume":300000,"traded_value":"6060000000","revision":"fixture-v1","observed_at":"2026-10-19T10:00:00+00:00","is_final":true},
+    {"symbol":"DEMOB","exchange":"HOSE","kind":"stock","session_date":"2026-10-19","open":"30000","high":"30200","low":"29500","close":"29800","volume":250000,"traded_value":"7450000000","revision":"fixture-v1","observed_at":"2026-10-19T10:00:00+00:00","is_final":true},
+    {"symbol":"DEMOC","exchange":"HNX","kind":"stock","session_date":"2026-10-19","open":"15000","high":"15200","low":"14900","close":"15100","volume":400000,"traded_value":"6040000000","revision":"fixture-v1","observed_at":"2026-10-19T10:00:00+00:00","is_final":true},
+    {"symbol":"VNINDEX","exchange":"HOSE","kind":"index","session_date":"2026-10-19","open":"1000","high":"1010","low":"990","close":"1005","volume":0,"traded_value":"0","revision":"fixture-v1","observed_at":"2026-10-19T10:00:00+00:00","is_final":true}
+  ]
+}

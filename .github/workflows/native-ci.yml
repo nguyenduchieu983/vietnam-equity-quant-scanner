@@ -1,0 +1,43 @@
+name: Native M0 checks
+on: [push, pull_request]
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql redis-server
+          sudo systemctl start postgresql redis-server
+          npm ci
+          python -m venv apps/quant-worker/.venv
+          apps/quant-worker/.venv/bin/python -m pip install --require-hashes -r apps/quant-worker/requirements-dev.lock
+      - name: Static and unit checks
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run build
+          npm test
+          apps/quant-worker/.venv/bin/ruff check apps/quant-worker/quant apps/quant-worker/tests
+          apps/quant-worker/.venv/bin/mypy apps/quant-worker/quant
+      - name: Provision isolated demo and native integration
+        run: |
+          node infra/scripts/init-demo-env.mjs
+          sudo python3 infra/scripts/provision-demo-db.py
+          bash infra/scripts/test-native-slice.sh
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-m0-logs
+          path: |
+            .runtime/test-api.log
+            .runtime/test-worker.log
