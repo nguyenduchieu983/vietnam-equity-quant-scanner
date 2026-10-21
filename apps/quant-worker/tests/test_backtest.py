@@ -55,6 +55,18 @@ class BacktestTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "SAME_BAR"):
             simulate(self.payload, self.config, self.days[1], self.days[-1], self.book, signal_source=bad)
 
+    def test_research_ema20_exit_uses_previous_session_and_preserves_default(self):
+        self.book["SIM"][self.days[4]] = {"close": 10000, "ema20": 10100, "ema50": 9000}
+        config = {**self.config, "strategy": "S1", "maxHold": 30}
+        self.assertEqual(self.run_sim(config=config)["trades"], [])
+        result = self.run_sim(config={**config, "s1ExitEma": 20})
+        self.assertEqual(len(result["trades"]), 1)
+        self.assertEqual(result["trades"][0]["exit_date"], self.days[5])
+        self.assertEqual(result["trades"][0]["exit_reason"], "EMA20")
+        self.book["SIM"][self.days[6]] = {"close": 1, "ema20": 20000, "ema50": 20000}
+        changed = self.run_sim(config={**config, "s1ExitEma": 20})
+        self.assertEqual(result["trades"], changed["trades"])
+
     def test_ticks_limits_and_risk_caps(self):
         self.assertEqual(tick_price(D(10001), "HOSE", "BUY", self.days[0]), D(10050))
         self.assertEqual(tick_price(D(10001), "HOSE", "SELL", self.days[0]), D(10000))

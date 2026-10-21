@@ -39,6 +39,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
     masters = {i["symbol"]: i for i in payload["instruments"]}
     initial = cash = decimal(config["capital"])
     fees = {k: decimal(config[k]) for k in ("buyFee", "sellFee", "sellTax", "slippage")}
+    exit_ema = config.get("s1ExitEma", 50)
+    if exit_ema not in (20, 50):
+        raise ValueError("INVALID_S1_EXIT_EMA")
     positions: dict[str, dict[str, Any]] = {}
     pending: list[tuple[int, Decimal]] = []
     equity: list[dict] = []
@@ -144,7 +147,8 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
             if not bar or idx < position["sellable"]:
                 continue
             prior_feature = book.get(symbol, {}).get(previous, {}) if previous else {}
-            strategy_exit = config["strategy"] == "S1" and prior_feature.get("ema50") is not None and prior_feature["close"] < prior_feature["ema50"]
+            exit_key = f"ema{exit_ema}"
+            strategy_exit = config["strategy"] == "S1" and prior_feature.get(exit_key) is not None and prior_feature["close"] < prior_feature[exit_key]
             stop_hit = decimal(bar["low"]) <= position["stop"]
             held_exit = idx-position["bought"] > config["maxHold"]
             if not (stop_hit or strategy_exit or held_exit):
@@ -172,7 +176,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 trades.append({"symbol": symbol, "entry_date": calendar[position["bought"]], "exit_date": session,
                                "quantity": quantity, "entry_price": str(position["entry"]), "exit_price": str(price),
                                "pnl": str(pnl), "fee": str(fee), "tax": str(tax), "dividend_income": str(money(allocated_income)),
-                               "exit_reason": "STOP" if stop_hit else "EMA50" if strategy_exit else "MAX_HOLD",
+                               "exit_reason": "STOP" if stop_hit else f"EMA{exit_ema}" if strategy_exit else "MAX_HOLD",
                                "cash_available_at": calendar[settle_idx] if settle_idx < len(calendar) else None})
                 order.update(status="FILLED", reason=trades[-1]["exit_reason"], quantity=quantity, price=str(price),
                              fee=str(fee), tax=str(tax), slippage_cost=str(abs(price-reference)*quantity))
