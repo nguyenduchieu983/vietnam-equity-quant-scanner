@@ -7,3 +7,4 @@ cutoff="${1:-$(TZ=Asia/Ho_Chi_Minh date -d yesterday +%F)}"
 node infra/scripts/fetch-vndirect-research.mjs "$cutoff"
 export PYTHONPATH="$ROOT/apps/quant-worker"
 "${QUANT_LOCAL_PYTHON:-$ROOT/apps/quant-worker/.venv/bin/python}" -m quant.paper "$ROOT/.runtime/vndirect-s1-${cutoff//-/}"
+"${QUANT_LOCAL_PYTHON:-$ROOT/apps/quant-worker/.venv/bin/python}" -m quant.real_import

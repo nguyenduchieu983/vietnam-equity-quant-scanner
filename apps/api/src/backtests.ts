@@ -31,7 +31,7 @@ export class BacktestsController {
     const c=await this.db.pool.connect();
     try {
       await c.query('BEGIN');
-      const ds=(await c.query("SELECT payload_json FROM research_datasets WHERE id=$1 AND is_demo=$2 AND status='COMPLETE'",[config.datasetId,mode()==='demo'])).rows[0];
+      const ds=(await c.query("SELECT payload_json FROM research_datasets WHERE id=$1 AND is_demo=$2 AND (status='COMPLETE' OR (NOT is_demo AND status='PARTIAL' AND quality_json->>'researchEligible'='true'))",[config.datasetId,mode()==='demo'])).rows[0];
       if(!ds) throw new ConflictException('DATASET_NOT_COMPLETE');
       const dates=[config.trainStart,config.trainEnd,config.validationStart,config.validationEnd,config.testStart,config.testEnd];
       const indices=dates.map(d=>ds.payload_json.calendar.indexOf(d));
@@ -42,7 +42,7 @@ export class BacktestsController {
       const hash=createHash('sha256').update(JSON.stringify(config)).digest('hex');
       const run=(await c.query(`INSERT INTO backtest_runs(job_id,dataset_id,strategy_id,parameter_hash,data_cutoff,train_start,train_end,test_start,test_end,config_json,fees_json,assumptions_json,status,is_demo)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$5,$9,$10,$11,'QUEUED',$12) RETURNING id,job_id,status`,
-        [job.id,config.datasetId,strategy.id,hash,config.testEnd,config.trainStart,config.trainEnd,config.testStart,JSON.stringify(config),JSON.stringify({buyFee:config.buyFee,sellFee:config.sellFee,sellTax:config.sellTax,slippage:config.slippage}),JSON.stringify({mode:'DEMO',rules:'illustrative-v1'}),mode()==='demo'])).rows[0];
+        [job.id,config.datasetId,strategy.id,hash,config.testEnd,config.trainStart,config.trainEnd,config.testStart,JSON.stringify(config),JSON.stringify({buyFee:config.buyFee,sellFee:config.sellFee,sellTax:config.sellTax,slippage:config.slippage}),JSON.stringify({mode:mode()==='demo'?'DEMO':'REAL_RESEARCH_PROVISIONAL',rules:'illustrative-v1'}),mode()==='demo'])).rows[0];
       await c.query('UPDATE jobs SET payload_json=$1 WHERE id=$2',[JSON.stringify({backtestId:run.id}),job.id]);
       await c.query("INSERT INTO audit_logs(actor,action,entity,entity_id) VALUES('admin','REQUEST_BACKTEST','backtest_runs',$1)",[run.id]);
       await c.query('COMMIT'); return run;

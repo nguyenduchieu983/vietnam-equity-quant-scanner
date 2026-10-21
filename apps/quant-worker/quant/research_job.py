@@ -65,7 +65,7 @@ def run_backtest(run_id: str, job_id: str) -> dict:
                 "trainMetrics": train["metrics"], "validationMetrics": validation["metrics"],
                 "testMetrics": test["metrics"], "walkForward": fold_results, "costSensitivity": sensitivity,
                 "openPositions": test["open_positions"],
-                "cashEvents": test["cash_events"], "warnings": test["warnings"], "isDemo": True,
+                "cashEvents": test["cash_events"], "warnings": test["warnings"], "isDemo": payload.get("classification") == "DEMO",
                 "promotion": "RESEARCH_ONLY", "selectionPolicy": "Fixed parameters; no fitting or optimization",
                 "units": "VND/share, shares, VND cash; decimal accounting rounded to 0.01 VND",
                 "finalHoldout": [config["testStart"], config["testEnd"]]}

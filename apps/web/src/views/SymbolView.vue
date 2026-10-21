@@ -16,7 +16,7 @@ onMounted(async()=>{try{datasets.value=(await api<any[]>('datasets')).data;datas
 watch(()=>route.params.symbol,()=>{if(datasetId.value)void load();});
 </script>
 <template>
-<div class="page-heading"><div><div class="eyebrow">SYMBOL EXPLORER</div><h1>{{route.params.symbol}}</h1><p>OHLC, volume và EMA từ snapshot được chọn.</p></div><Tag value="DEMO / NOT INVESTMENT ADVICE" severity="warn" /></div>
+<div class="page-heading"><div><div class="eyebrow">SYMBOL EXPLORER</div><h1>{{route.params.symbol}}</h1><p>OHLC, volume và EMA từ snapshot được chọn.</p></div><Tag :value="datasets.find(d=>d.id===datasetId)?.is_demo ? 'DEMO' : 'REAL EOD · PROVISIONAL'" severity="warn" /></div>
 <Message v-if="error" severity="error">{{error}}</Message>
 <div class="filter-toolbar"><Select v-model="datasetId" :options="datasets" optionLabel="name" optionValue="id" aria-label="Dataset" @change="load"/><Select v-model="basis" :options="['raw','adjusted']" aria-label="Giá raw/adjusted"/></div>
 <ResearchChart v-if="bars.length" :bars="bars" :adjusted="basis==='adjusted'"/>

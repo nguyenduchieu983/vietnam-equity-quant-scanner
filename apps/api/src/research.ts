@@ -25,7 +25,7 @@ export class ResearchController {
   constructor(private readonly db: Database) {}
   @Post('scans')
   async scan(@Body() body: ScanDto) {
-    const dataset = await this.db.pool.query('SELECT id FROM research_datasets WHERE id=$1 AND is_demo=$2 AND status=$3', [body.datasetId, mode()==='demo','COMPLETE']);
+    const dataset = await this.db.pool.query("SELECT id FROM research_datasets WHERE id=$1 AND is_demo=$2 AND (status=$3 OR (NOT is_demo AND status='PARTIAL' AND quality_json->>'researchEligible'='true'))", [body.datasetId, mode()==='demo','COMPLETE']);
     if (!dataset.rowCount) throw new ConflictException('DATASET_NOT_COMPLETE');
     const client = await this.db.pool.connect();
     try {

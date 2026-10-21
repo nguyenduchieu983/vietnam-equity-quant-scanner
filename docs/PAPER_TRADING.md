@@ -30,8 +30,9 @@ mỗi vị thế đã đóng hết, không đếm mỗi lần chốt một phầ
 
 Nguồn VNDIRECT public, cohort 100 mã cố định theo thanh khoản tháng 12/2023;
 metadata và corporate actions vẫn có hạn chế lịch sử. Dữ liệu raw nằm trong
-`.runtime`, không commit. Paper dùng bảng snapshot riêng dù các màn nghiên
-cứu khác vẫn ở DATA_MODE=demo. Không có kết nối đặt lệnh broker.
+`.runtime`, không commit. Paper dùng bảng snapshot riêng. Dashboard, Scanner,
+trang mã và Strategy Lab hiện đã nối vào kho real với DATA_MODE=real.
+Không có kết nối đặt lệnh broker.
 
 ## Cập nhật mỗi ngày
 

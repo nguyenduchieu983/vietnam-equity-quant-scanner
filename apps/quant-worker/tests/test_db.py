@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest.mock import patch
 from quant.db import ROOT, connect
 from quant.ingest import ingest
 from quant.provider import FixtureProvider
@@ -7,6 +8,7 @@ from quant.provider import FixtureProvider
 
 @unittest.skipUnless(os.getenv("QUANT_INTEGRATION") == "1", "requires migrated native PostgreSQL test database")
 class DatabaseTests(unittest.TestCase):
+    @patch.dict(os.environ, {"DATA_MODE": "demo"})
     def test_ingest_idempotent_with_provenance(self):
         provider = FixtureProvider(ROOT / "tests/fixtures/eod-demo.json")
         ingest(provider)

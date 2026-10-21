@@ -182,10 +182,10 @@ def import_history(payload: dict | None = None) -> str:
 
 def load_dataset(dataset_id: str) -> dict:
     with connect() as conn:
-        row = conn.execute("SELECT payload_json,status,content_hash FROM research_datasets WHERE id=%s AND is_demo=%s",
+        row = conn.execute("SELECT payload_json,status,content_hash,quality_json FROM research_datasets WHERE id=%s AND is_demo=%s",
                            (dataset_id, os.getenv("DATA_MODE") == "demo")).fetchone()
     if not row:
         raise ValueError("DATASET_NOT_FOUND")
-    if row[1] != "COMPLETE":
+    if row[1] != "COMPLETE" and not (row[1] == "PARTIAL" and row[0].get("classification") == "REAL_RESEARCH" and row[3].get("researchEligible") is True):
         raise ValueError("DATA_QUALITY_BLOCKED")
     return {**row[0], "content_hash": row[2]}

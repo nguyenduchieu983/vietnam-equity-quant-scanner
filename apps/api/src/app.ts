@@ -49,7 +49,7 @@ class AppController {
     const result = await this.db.pool.query(`SELECT
       (SELECT count(*)::int FROM market_bars WHERE is_demo=$1) AS bars,
       (SELECT count(*)::int FROM instruments WHERE is_demo=$1) AS instruments,
-      (SELECT max(finished_at) FROM ingestion_runs WHERE status='COMPLETE' AND is_demo=$1) AS "lastIngest",
+      (SELECT max(finished_at) FROM ingestion_runs WHERE status IN ('COMPLETE','PARTIAL') AND is_demo=$1) AS "lastIngest",
       (SELECT max(session_date)::text FROM market_bars WHERE is_demo=$1) AS "latestSession",
       EXISTS(SELECT 1 FROM worker_heartbeats WHERE observed_at > now()-interval '30 seconds') AS worker`, [mode() === 'demo']);
     const redis = await this.db.redis.ping().then(() => true).catch(() => false);
@@ -111,7 +111,7 @@ class AppController {
   }
   @Get('datasets')
   async datasets() {
-    return (await this.db.pool.query(`SELECT id,name,content_hash,provider,is_demo,status,from_date,to_date,quality_json
+    return (await this.db.pool.query(`SELECT id,name,content_hash,provider,is_demo,status,from_date::text AS from_date,to_date::text AS to_date,quality_json
       FROM research_datasets WHERE is_demo=$1 ORDER BY created_at DESC LIMIT 50`, [mode() === 'demo'])).rows;
   }
   @Get('data-quality/issues')

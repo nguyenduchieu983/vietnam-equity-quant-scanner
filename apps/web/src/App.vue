@@ -17,7 +17,7 @@ const error = ref('');
 const nav = [
   { path: '/dashboard', icon: 'pi pi-th-large', label: 'Tổng quan', index: '01' },
   { path: '/scanner', icon: 'pi pi-filter', label: 'Scanner', index: '02' },
-  { path: '/symbols/SIM00', icon: 'pi pi-chart-line', label: 'Phân tích mã', index: '03' },
+  { path: '/symbols/FPT', icon: 'pi pi-chart-line', label: 'Phân tích mã', index: '03' },
   { path: '/lab', icon: 'pi pi-sliders-h', label: 'Strategy Lab', index: '04' },
   { path: '/portfolio', icon: 'pi pi-wallet', label: 'Paper Portfolio', index: '05' },
   { path: '/operations', icon: 'pi pi-server', label: 'Dữ liệu & vận hành', index: '06' }

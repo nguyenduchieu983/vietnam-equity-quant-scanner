@@ -39,10 +39,10 @@ async function csv(kind:string){
   try{const data=(await api<any>(`backtests/${result.value.id}/export`)).data;const url=URL.createObjectURL(new Blob(['\uFEFF'+data[kind+'Csv']],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`${kind}-${result.value.id}.csv`;a.click();URL.revokeObjectURL(url);}catch(e){error.value=(e as Error).message;}
 }
 function percent(v:number|null){return v==null?'N/A':`${(v*100).toFixed(2)}%`;}
-onMounted(async()=>{try{datasets.value=(await api<any[]>('datasets')).data.filter(d=>d.status==='COMPLETE');form.value.datasetId=datasets.value[0]?.id??'';await refresh();}catch(e){error.value=(e as Error).message;}});
+onMounted(async()=>{try{datasets.value=(await api<any[]>('datasets')).data.filter(d=>d.status==='COMPLETE'||(!d.is_demo&&d.status==='PARTIAL'&&d.quality_json?.researchEligible));form.value.datasetId=datasets.value[0]?.id??'';if(datasets.value[0]&&!datasets.value[0].is_demo){form.value.trainStart='2022-01-04';form.value.trainEnd='2023-12-26';form.value.testStart='2024-09-04';form.value.testEnd=String(datasets.value[0].to_date).slice(0,10);}await refresh();}catch(e){error.value=(e as Error).message;}});
 </script>
 <template>
-  <div class="page-heading"><div><div class="eyebrow">QUANT RESEARCH / OUT-OF-SAMPLE</div><h1>Strategy Lab</h1><p>Snapshot bất biến · Khớp phiên kế tiếp · Chi phí và giới hạn vốn</p></div><Tag value="DEMO · RESEARCH ONLY" severity="warn"/></div>
+  <div class="page-heading"><div><div class="eyebrow">QUANT RESEARCH / OUT-OF-SAMPLE</div><h1>Strategy Lab</h1><p>Snapshot bất biến · Khớp phiên kế tiếp · Chi phí và giới hạn vốn</p></div><Tag :value="datasets.find(d=>d.id===form.datasetId)?.is_demo ? 'DEMO · RESEARCH ONLY' : 'REAL EOD · PROVISIONAL'" severity="warn"/></div>
   <Message severity="warn">Dữ liệu tổng hợp, lịch phiên và quy tắc thị trường minh họa. Kết quả không chứng minh hiệu quả đầu tư thực tế. S4 là thử nghiệm.</Message>
   <Message v-if="error" severity="error">{{error}}</Message>
   <div class="lab-grid">

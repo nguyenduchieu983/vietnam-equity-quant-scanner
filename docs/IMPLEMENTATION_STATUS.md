@@ -72,3 +72,13 @@ idempotency, ledger parity/immutability and browser checks are documented in
 [PAPER_TRADING.md](PAPER_TRADING.md). 43 Python tests pass. General custom paper
 order entry, automatic EOD scheduling and production reboot acceptance remain
 open; this is not a claim that every original M4 production criterion is complete.
+
+2026-10-21 real workspace update: local DATA_MODE=real; the validated VNDIRECT
+paper snapshot is now published to real research datasets, canonical bars and
+S1-S4 scans. Dashboard, Scanner, FPT analysis, Strategy Lab and Operations read
+real rows; synthetic rows are preserved and excluded by mode. Real datasets
+with missing stock sessions remain PARTIAL and are explicitly eligible only
+for provisional research after validation; invalid/missing-index/non-final data
+stay blocked. This 100-stock EOD cohort is not exchange-wide or realtime data.
+The existing paper refresh scripts now publish and scan the real workspace too.
+See `tests/e2e/real-workspace.mjs` and `real-workspace-browser.mjs` for verification.

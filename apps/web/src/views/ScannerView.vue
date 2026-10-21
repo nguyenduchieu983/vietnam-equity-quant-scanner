@@ -45,14 +45,14 @@ async function load() {
 }
 function filter() { page.value = 0; void load(); }
 onMounted(async () => {
-  try { datasets.value=(await api<any[]>('datasets')).data.filter(d=>d.status==='COMPLETE');datasetId.value=datasets.value[0]?.id??'';runs.value = (await api<ScanRun[]>('scans')).data; run.value = runs.value[0]?.id ?? null; await load(); }
+  try { datasets.value=(await api<any[]>('datasets')).data.filter(d=>d.status==='COMPLETE'||(!d.is_demo&&d.status==='PARTIAL'&&d.quality_json?.researchEligible));datasetId.value=datasets.value[0]?.id??'';runs.value = (await api<ScanRun[]>('scans')).data; run.value = runs.value[0]?.id ?? null; await load(); }
   catch (e) { error.value = (e as Error).message; }
 });
 </script>
 <template>
-  <div class="page-heading"><div><div class="eyebrow">SIGNAL EXPLORER</div><h1>Bộ lọc tín hiệu</h1><p>Điểm số có nguồn gốc, điều kiện rõ ràng và lý do loại trừ.</p></div><Tag value="DEMO RESEARCH" severity="warn" /></div>
+  <div class="page-heading"><div><div class="eyebrow">SIGNAL EXPLORER</div><h1>Bộ lọc tín hiệu</h1><p>Điểm số có nguồn gốc, điều kiện rõ ràng và lý do loại trừ.</p></div><Tag :value="datasets.find(d=>d.id===datasetId)?.is_demo ? 'DEMO RESEARCH' : 'REAL EOD · PROVISIONAL'" severity="warn" /></div>
   <Message v-if="error" severity="error">{{ error }}</Message>
-  <Message severity="warn">Kết quả tính từ dữ liệu tổng hợp DEMO, không phải tín hiệu thị trường thật. S4 là EXPERIMENTAL.</Message>
+  <Message severity="warn">{{ datasets.find(d=>d.id===datasetId)?.is_demo ? 'Dữ liệu tổng hợp DEMO.' : 'Dữ liệu thật VNDIRECT public; 100 mã cố định, có phiên thiếu và hạn chế metadata lịch sử.' }} S4 là EXPERIMENTAL.</Message>
   <div class="filter-toolbar"><Select v-model="datasetId" :options="datasets" optionLabel="name" optionValue="id" aria-label="Dataset scan"/><Button label="Chạy scan" icon="pi pi-play" :disabled="!datasetId" :loading="loading" @click="runScan"/><Tag v-if="jobStatus" :value="jobStatus"/></div>
   <div class="filter-toolbar"><Select v-model="strategy" :options="['S1','S2','S3','S4']" aria-label="Chiến lược" @change="filter" /><Select v-model="exchange" :options="['HOSE','HNX']" placeholder="Tất cả sàn" showClear aria-label="Sàn giao dịch" @change="filter" /><InputText v-model="query" placeholder="Tìm mã chứng khoán" aria-label="Tìm mã" @keyup.enter="filter" /><Button icon="pi pi-search" label="Lọc" @click="filter" /><Select v-model="run" :options="runs" optionLabel="session_date" optionValue="id" placeholder="Chưa có phiên scan" aria-label="Phiên scan" @change="filter" /></div>
   <DataTable :value="rows" lazy paginator :rows="25" :first="page * 25" :totalRecords="total" :loading="loading" size="small" @page="page = $event.page; load()" @sort="sort = String($event.sortField); direction = $event.sortOrder === -1 ? 'desc' : 'asc'; filter()">

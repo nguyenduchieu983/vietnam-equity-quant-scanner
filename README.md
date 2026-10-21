@@ -27,6 +27,12 @@ See [Windows instructions](docs/LOCAL_WINDOWS.md), [status](docs/IMPLEMENTATION_
 Paired S1 paper is available at `/portfolio`: [paper guide](docs/PAPER_TRADING.md).
 It separates real-data forward accounts from historical replay and requires EOD approval.
 
+The prepared local workspace now uses `DATA_MODE=real`: Dashboard, Scanner,
+symbol charts and Strategy Lab read the VNDIRECT public EOD snapshot (100-stock
+fixed cohort). Run `paper-refresh-windows.ps1` to refresh, import and rescan.
+Historical gaps remain visible as PARTIAL/provisional research, never filled
+with synthetic prices. Older DEMO records remain isolated in the database.
+
 Still open: licensed real-data adapter and incremental EOD scheduler, full-scale
 performance benchmark, unrestricted manual paper order entry, clean-server install and reboot
 acceptance. See [Linux runbook](docs/OPERATIONS.md) for native deployment scripts.
