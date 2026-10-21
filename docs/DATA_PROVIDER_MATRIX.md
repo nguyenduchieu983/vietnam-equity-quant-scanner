@@ -24,3 +24,10 @@ Local M1 history adapter: synthetic-history-v2, 8 invented stocks + synthetic
 VNINDEX, weekday sessions 2022-01-03..2026-10-19, delayed listing and delisting.
 Deterministic content hash and immutable quality snapshot; all labels DEMO.
 This is test data generated locally, not an additional market data provider.
+
+2026-10-21: separate offline real research adapter successfully fetched VNDIRECT
+public finfo daily raw/adjusted prices, VNINDEX and corporate actions for a
+frozen 100-stock cohort, plus current Vietcap sector metadata. This is local
+personal research with provisional quality, not a production entitlement or
+redistribution claim. Raw snapshots remain ignored. See
+[real S1 report](REAL_S1_BACKTEST_2026-10-21.md) for evidence and limitations.

@@ -82,6 +82,33 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
             if event["known_at"][:10] > session:
                 raise ValueError("ACTION_NOT_KNOWN_AT_DECISION")
             position = positions[event["symbol"]]
+            if event["type"] == "STOCK_DIVIDEND":
+                # Entitlements have value at ex-date but cannot be sold before listing.
+                ratio = decimal(event["ratio"])
+                if ratio <= 0:
+                    raise ValueError("INVALID_STOCK_DIVIDEND")
+                entitled = position["qty"] * ratio
+                bonus = int(entitled)
+                if entitled != bonus:
+                    warnings.add("FRACTIONAL_BONUS_ROUNDED_DOWN")
+                available = event.get("available_date")
+                release = next((j for j, d in enumerate(calendar) if available and d >= available), len(calendar)+1)
+                if not available:
+                    warnings.add("BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END")
+                position.setdefault("locks", []).append((release, bonus))
+                old_qty = position["qty"]
+                position["qty"] += bonus
+                position["entry"] *= decimal(old_qty)/position["qty"]
+                position["stop"] /= 1+ratio
+                position["last"] /= 1+ratio
+                cash_events.append({"session": session, "kind": "STOCK_DIVIDEND_LOCKED", "symbol": event["symbol"],
+                                    "quantity": bonus, "available_date": available})
+                warnings.add("STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED")
+                continue
+            if event["type"] == "RIGHTS_ISSUE":
+                # No automatic subscription or invented sale proceeds for unquoted rights.
+                warnings.add("RIGHTS_NOT_EXERCISED_VALUE_ZERO")
+                continue
             if event["type"] == "SPLIT":
                 ratio = decimal(event["ratio"])
                 new_quantity = position["qty"]*ratio
@@ -92,10 +119,13 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 position["last"] /= ratio
                 position["entry"] /= ratio
             elif event["type"] == "CASH_DIVIDEND":
-                if event["payable_date"] not in calendar or event["payable_date"] < session:
+                if event["payable_date"] < session:
                     raise ValueError("UNVERIFIED_DIVIDEND_PAYABLE_DATE")
-                amount = money(decimal(event["cash_amount"])*position["qty"])
-                payable_idx = calendar.index(event["payable_date"])
+                amount = money(decimal(event["cash_amount"])*position["qty"]*(1-decimal(event.get("withholding_rate", 0))))
+                payable_idx = next((j for j, d in enumerate(calendar) if d >= event["payable_date"]), len(calendar)+1)
+                position["income"] = position.get("income", Decimal(0)) + amount
+                if event.get("adjust_stop"):
+                    position["stop"] = max(Decimal(".01"), position["stop"]-decimal(event["cash_amount"]))
                 if payable_idx == idx:
                     cash += amount
                 else:
@@ -121,7 +151,13 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 continue
             price, reason, reference = fill_price(bar, "SELL", fees["slippage"], rules, position["stop"] if stop_hit else None)
             capacity = int(decimal(bar["volume"])*decimal(rules["participation"])) // rules["board_lot"]*rules["board_lot"]
-            quantity = min(position["qty"], capacity)
+            locked = sum(q for release, q in position.get("locks", []) if release > idx)
+            available_qty = max(0, position["qty"]-locked)
+            quantity = min(available_qty, capacity)
+            if position.get("locks"):
+                quantity = quantity // rules["board_lot"] * rules["board_lot"]
+                if available_qty % rules["board_lot"]:
+                    warnings.add("ODD_LOT_RESIDUAL_MARKED_NOT_SOLD")
             order = {"session_date": session, "decision_date": previous, "symbol": symbol, "side": "SELL",
                      "status": "NO_FILL", "reason": reason, "quantity": 0, "price": None, "fee": "0", "tax": "0", "slippage_cost": "0"}
             if price is not None and quantity:
@@ -131,20 +167,22 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 settle_idx = idx+rules["settlement_sessions"]+rules["availability_offset_sessions"]
                 pending.append((settle_idx, proceeds))
                 cost = position["cost"]*quantity/position["qty"]
-                pnl = money(proceeds-cost)
+                allocated_income = position.get("income", Decimal(0))*quantity/position["qty"]
+                pnl = money(proceeds-cost+allocated_income)
                 trades.append({"symbol": symbol, "entry_date": calendar[position["bought"]], "exit_date": session,
                                "quantity": quantity, "entry_price": str(position["entry"]), "exit_price": str(price),
-                               "pnl": str(pnl), "fee": str(fee), "tax": str(tax),
+                               "pnl": str(pnl), "fee": str(fee), "tax": str(tax), "dividend_income": str(money(allocated_income)),
                                "exit_reason": "STOP" if stop_hit else "EMA50" if strategy_exit else "MAX_HOLD",
                                "cash_available_at": calendar[settle_idx] if settle_idx < len(calendar) else None})
                 order.update(status="FILLED", reason=trades[-1]["exit_reason"], quantity=quantity, price=str(price),
                              fee=str(fee), tax=str(tax), slippage_cost=str(abs(price-reference)*quantity))
                 position["cost"] -= cost
+                position["income"] = position.get("income", Decimal(0))-allocated_income
                 position["qty"] -= quantity
                 if not position["qty"]:
                     del positions[symbol]
             elif not quantity:
-                order["reason"] = "VOLUME_CAP"
+                order["reason"] = "SHARES_NOT_AVAILABLE" if not available_qty else "ODD_LOT_NOT_EXECUTABLE" if available_qty < rules["board_lot"] else "VOLUME_CAP"
             orders.append(order)
         new_entries = 0
         for signal in sorted((s for s in signals if s["side"] == "LONG"), key=lambda s: (-s["score"], s["symbol"])):

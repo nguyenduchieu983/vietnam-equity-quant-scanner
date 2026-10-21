@@ -22,7 +22,11 @@ assumption**, not a verified exchange/broker policy.
 
 Splits change shares/entry/stop without duplicating cost. Dividends become
 receivables on ex-date, cash on payable date; unsupported events fail closed.
-Closed-trade PnL excludes dividend allocation; total NAV includes dividends.
+Closed-trade PnL includes proportionately allocated net dividend income; total
+NAV records the same dividend once as cash/receivable. Stock dividends add
+economic shares on ex-date and lock sale eligibility until the reported listing
+date. Unknown receipt dates remain locked through the horizon. Fractional
+shares are rounded down; odd lots remain marked, without invented executions.
 Open positions are marked, not forcibly liquidated. Unavailable/delisted marks
 remain stale with a warning; no invented liquidation price.
 
@@ -37,7 +41,8 @@ Contemporaneous cross-sectional percentiles are not fitted scalers. The app
 labels final test separately but does not prevent repeated inspection: users
 must not call a repeatedly examined holdout untouched confirmatory research.
 
-Benchmark: synthetic VNINDEX price index from first test open, plus 0% cash.
+Benchmark: dataset VNINDEX price index from first test open, plus 0% cash
+(synthetic in DEMO; public VNDIRECT index in the separate real research runner).
 No dividend reinvestment benchmark. Annualization 252 sessions, Sharpe risk-free
 0. Undefined metrics are null/N/A. Fewer than 30 closed trades triggers warning.
 Slippage sensitivity .05%/.30% per side versus .10% base can alter fills and

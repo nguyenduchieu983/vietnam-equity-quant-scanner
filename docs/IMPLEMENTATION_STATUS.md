@@ -55,3 +55,10 @@ fetch/scheduler and revision reconciliation. Existing retry helper is exercised
 against controlled failures, not a live provider. Current history importer is
 snapshot/idempotent, not a claim of live incremental fetching.
 M4/manual paper and production deployment remain outside this local backtest delivery.
+
+2026-10-21: S1 rerun offline on public real VNDIRECT data for a pre-test fixed
+100-stock cohort. 45 fully closed positions, 17 wins (37.78%); provisional
+because of missing bars, historical metadata and corporate-action limitations.
+31 Python tests including native DB integration, Ruff and mypy pass. See
+[real S1 report](REAL_S1_BACKTEST_2026-10-21.md). The UI remains DEMO; production
+provider ingestion, M4 and reboot acceptance are still pending.

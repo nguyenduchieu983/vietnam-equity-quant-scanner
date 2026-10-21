@@ -23,9 +23,9 @@ def ema(values: list[float], period: int) -> list[float | None]:
 def features(bars: list[dict]) -> dict[str, dict]:
     if [b["session_date"] for b in bars] != sorted({b["session_date"] for b in bars}):
         raise ValueError("UNSORTED_OR_DUPLICATE_SERIES")
-    closes = [float(b["close"]) * float(b["factor"]) for b in bars]
-    highs = [float(b["high"]) * float(b["factor"]) for b in bars]
-    lows = [float(b["low"]) * float(b["factor"]) for b in bars]
+    closes = [float(b.get("adjusted_close", float(b["close"]) * float(b["factor"]))) for b in bars]
+    highs = [float(b.get("adjusted_high", float(b["high"]) * float(b["factor"]))) for b in bars]
+    lows = [float(b.get("adjusted_low", float(b["low"]) * float(b["factor"]))) for b in bars]
     e20, e50, e200 = (ema(closes, p) for p in (20, 50, 200))
     tr = [highs[i] - lows[i] if i == 0 else max(highs[i] - lows[i], abs(highs[i] - closes[i-1]),
                                                abs(lows[i] - closes[i-1])) for i in range(len(bars))]
