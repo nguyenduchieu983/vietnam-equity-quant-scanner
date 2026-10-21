@@ -92,6 +92,57 @@ class BacktestTests(unittest.TestCase):
         self.assertEqual(split["trades"][0]["quantity"], 200)
         self.assertEqual(split["trades"][0]["pnl"], result["trades"][0]["pnl"])
 
+    def test_profit_target_respects_settlement_and_stop_first(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1TargetR": 1}
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM":
+                bar["high"] = "12000"
+        result = self.run_sim(config=config)
+        trade = result["trades"][0]
+        self.assertEqual(trade["exit_date"], self.days[4])
+        self.assertEqual(trade["exit_reason"], "TAKE_PROFIT")
+        self.assertEqual(trade["exit_price"], "12000")
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM" and bar["session_date"] == self.days[4]:
+                bar.update(low="7500", floor="7000")
+        adverse = self.run_sim(config=config)["trades"][0]
+        self.assertEqual(adverse["exit_reason"], "STOP")
+        self.assertEqual(adverse["exit_price"], "8000")
+
+    def test_breakeven_uses_previous_close_not_high_and_gap_can_lose(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1BreakevenR": 1}
+        self.book["SIM"][self.days[3]] = {"raw_close": 11000}
+        self.book["SIM"][self.days[4]] = {"raw_close": 12000}
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM" and bar["session_date"] in self.days[3:5]:
+                bar.update(high="13000", ceiling="14000")
+            if bar["symbol"] == "SIM" and bar["session_date"] == self.days[5]:
+                bar.update(open="9000", low="8500")
+        result = self.run_sim(config=config)
+        self.assertEqual(result["trades"][0]["exit_date"], self.days[5])
+        self.assertEqual(result["trades"][0]["exit_price"], "9000")
+        self.assertLess(D(result["trades"][0]["pnl"]), 0)
+        self.book["SIM"][self.days[6]] = {"raw_close": 999999}
+        self.assertEqual(result["trades"], self.run_sim(config=config)["trades"])
+
+    def test_profit_levels_adjust_for_split(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1TargetR": 1, "s1BreakevenR": 1}
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM":
+                bar["high"] = "12000"
+        original = self.run_sim(config=config)
+        payload = copy.deepcopy(self.payload)
+        payload["actions"] = [{"symbol": "SIM", "type": "SPLIT", "ratio": 2,
+                               "ex_date": self.days[3], "known_at": self.days[0]}]
+        for bar in payload["bars"]:
+            if bar["symbol"] == "SIM" and bar["session_date"] >= self.days[3]:
+                for key in ("open", "high", "low", "close", "floor", "ceiling"):
+                    bar[key] = str(D(bar[key])/2)
+        result = self.run_sim(payload=payload, config=config)
+        self.assertEqual(result["trades"][0]["exit_price"], "6000")
+        self.assertEqual(result["trades"][0]["quantity"], 200)
+        self.assertEqual(result["trades"][0]["pnl"], original["trades"][0]["pnl"])
+
     def test_ticks_limits_and_risk_caps(self):
         self.assertEqual(tick_price(D(10001), "HOSE", "BUY", self.days[0]), D(10050))
         self.assertEqual(tick_price(D(10001), "HOSE", "SELL", self.days[0]), D(10000))

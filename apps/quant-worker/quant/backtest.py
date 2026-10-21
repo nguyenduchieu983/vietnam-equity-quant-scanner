@@ -45,6 +45,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
     trail_atr = config.get("s1TrailAtr")
     if trail_atr is not None and (config["strategy"] != "S1" or trail_atr not in (2, 3)):
         raise ValueError("INVALID_S1_TRAIL_ATR")
+    target_r, breakeven_r = config.get("s1TargetR"), config.get("s1BreakevenR")
+    if any(v is not None and (config["strategy"] != "S1" or v not in (1, 2)) for v in (target_r, breakeven_r)):
+        raise ValueError("INVALID_S1_PROFIT_RULE")
     positions: dict[str, dict[str, Any]] = {}
     pending: list[tuple[int, Decimal]] = []
     equity: list[dict] = []
@@ -53,6 +56,11 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
     warnings = set(payload["warnings"] + ["OPEN_FILL_APPROXIMATION", "EX_POST_VOLUME_CAP", "TARGET_DISABLED",
                                         "ILLUSTRATIVE_COSTS", "PRICE_INDEX_NOT_TOTAL_RETURN", "FIXED_PARAMETERS_NO_OPTIMIZATION"])
     cash_events: list[dict] = []
+    if target_r is not None:
+        warnings.discard("TARGET_DISABLED")
+        warnings.add("TARGET_MARKET_TRIGGER_ADVERSE_FIRST")
+    if breakeven_r is not None:
+        warnings.add("BREAKEVEN_ESTIMATED_COSTS_NOT_GUARANTEED")
     peak = initial
     benchmark_base = decimal(bars[("VNINDEX", start)]["open"])
     clock_start = time.monotonic()
@@ -82,6 +90,14 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
         if settled:
             cash_events.append({"session": session, "kind": "SETTLEMENT", "amount": str(settled)})
         pending = [(day, amount) for day, amount in pending if day > idx]
+        if breakeven_r is not None and idx:
+            for symbol, position in positions.items():
+                prior = book.get(symbol, {}).get(calendar[idx-1], {})
+                if prior.get("raw_close", 0) >= position["be_trigger"]:
+                    # Previous close activates protection for today, never retroactively.
+                    unit_cost = (position["cost"]-position.get("income", Decimal(0)))/position["qty"]
+                    level = unit_cost/((1-fees["sellFee"]-fees["sellTax"])*(1-fees["slippage"]))
+                    position["stop"] = max(position["stop"], level)
         # Ratchet using only the previous session, before today's action adjustment.
         if trail_atr is not None and idx:
             for symbol, position in positions.items():
@@ -114,6 +130,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 position["entry"] *= decimal(old_qty)/position["qty"]
                 position["stop"] /= 1+ratio
                 position["last"] /= 1+ratio
+                for key in ("target", "be_trigger"):
+                    if key in position:
+                        position[key] /= 1+ratio
                 cash_events.append({"session": session, "kind": "STOCK_DIVIDEND_LOCKED", "symbol": event["symbol"],
                                     "quantity": bonus, "available_date": available})
                 warnings.add("STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED")
@@ -131,6 +150,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 position["stop"] /= ratio
                 position["last"] /= ratio
                 position["entry"] /= ratio
+                for key in ("target", "be_trigger"):
+                    if key in position:
+                        position[key] /= ratio
             elif event["type"] == "CASH_DIVIDEND":
                 if event["payable_date"] < session:
                     raise ValueError("UNVERIFIED_DIVIDEND_PAYABLE_DATE")
@@ -139,6 +161,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 position["income"] = position.get("income", Decimal(0)) + amount
                 if event.get("adjust_stop"):
                     position["stop"] = max(Decimal(".01"), position["stop"]-decimal(event["cash_amount"]))
+                    for key in ("target", "be_trigger"):
+                        if key in position:
+                            position[key] = max(Decimal(".01"), position[key]-decimal(event["cash_amount"]))
                 if payable_idx == idx:
                     cash += amount
                 else:
@@ -151,7 +176,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                           evaluate(payload, book, previous, config["strategy"],
                                    {"minLiquidity": config["minLiquidity"], "maxHold": config["maxHold"]})
                           if previous else ({"riskMultiplier": 0}, []))
-        # Exit only settled stock. A stop is adverse-first; no profit target exists.
+        # Exit only settled stock. Stop wins when daily OHLC cannot resolve ordering.
         for symbol, position in list(positions.items()):
             bar = bars.get((symbol, session))
             if not bar or idx < position["sellable"]:
@@ -161,9 +186,12 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
             strategy_exit = config["strategy"] == "S1" and prior_feature.get(exit_key) is not None and prior_feature["close"] < prior_feature[exit_key]
             stop_hit = decimal(bar["low"]) <= position["stop"]
             held_exit = idx-position["bought"] > config["maxHold"]
-            if not (stop_hit or strategy_exit or held_exit):
+            target_hit = "target" in position and decimal(bar["high"]) >= position["target"]
+            if not (stop_hit or strategy_exit or held_exit or target_hit):
                 continue
-            price, reason, reference = fill_price(bar, "SELL", fees["slippage"], rules, position["stop"] if stop_hit else None)
+            target_exit = target_hit and not (stop_hit or strategy_exit or held_exit)
+            fill_bar = {**bar, "open": str(max(decimal(bar["open"]), position["target"]))} if target_exit else bar
+            price, reason, reference = fill_price(fill_bar, "SELL", fees["slippage"], rules, position["stop"] if stop_hit else None)
             capacity = int(decimal(bar["volume"])*decimal(rules["participation"])) // rules["board_lot"]*rules["board_lot"]
             locked = sum(q for release, q in position.get("locks", []) if release > idx)
             available_qty = max(0, position["qty"]-locked)
@@ -186,7 +214,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 trades.append({"symbol": symbol, "entry_date": calendar[position["bought"]], "exit_date": session,
                                "quantity": quantity, "entry_price": str(position["entry"]), "exit_price": str(price),
                                "pnl": str(pnl), "fee": str(fee), "tax": str(tax), "dividend_income": str(money(allocated_income)),
-                               "exit_reason": "STOP" if stop_hit else f"EMA{exit_ema}" if strategy_exit else "MAX_HOLD",
+                               "exit_reason": "STOP" if stop_hit else f"EMA{exit_ema}" if strategy_exit else "MAX_HOLD" if held_exit else "TAKE_PROFIT",
                                "cash_available_at": calendar[settle_idx] if settle_idx < len(calendar) else None})
                 order.update(status="FILLED", reason=trades[-1]["exit_reason"], quantity=quantity, price=str(price),
                              fee=str(fee), tax=str(tax), slippage_cost=str(abs(price-reference)*quantity))
@@ -232,6 +260,11 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 positions[symbol] = {"qty": quantity, "bought": idx, "sellable": idx+rules["settlement_sessions"]+rules["availability_offset_sessions"],
                                      "entry": price, "cost": notional+fee, "stop": decimal(signal["invalidation_price"]),
                                      "last": price}
+                initial_risk = price-decimal(signal["invalidation_price"])
+                if target_r is not None:
+                    positions[symbol]["target"] = price+decimal(target_r)*initial_risk
+                if breakeven_r is not None:
+                    positions[symbol]["be_trigger"] = price+decimal(breakeven_r)*initial_risk
                 new_entries += 1
                 order.update(status="FILLED", reason="NEXT_SESSION_OPEN", quantity=quantity, price=str(price),
                              fee=str(fee), slippage_cost=str(abs(price-reference)*quantity))
