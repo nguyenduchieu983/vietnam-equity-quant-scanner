@@ -1,0 +1,14 @@
+import 'dotenv/config';import assert from 'node:assert/strict';import {chromium} from 'playwright';import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+const base='http://localhost:5173/api/v1/';let token;
+async function api(path,body){const r=await fetch(base+path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:body?JSON.stringify(body):undefined});const v=await r.json();assert.equal(r.status,body?201:200,JSON.stringify(v.error));return v.data;}
+async function wait(id){for(let i=0;i<120;i++){const j=await api(`paper/jobs/${id}`);if(j.status==='FAILED')throw Error(j.error_code);if(j.status==='COMPLETE')return j.result_json;await new Promise(r=>setTimeout(r,2500));}throw Error('timeout');}
+token=(await api('auth/login',{password:process.env.SMOKE_ADMIN_PASSWORD})).accessToken;
+const file='.runtime/desk-orders-replay.json';let pairId;
+if(existsSync(file))pairId=JSON.parse(readFileSync(file)).pairId;
+else{const list=await api('paper');const j=await api('paper/pairs',{snapshotId:list.snapshot.id,mode:'REPLAY',startDay:'2026-09-03',idempotencyKey:crypto.randomUUID()});pairId=(await wait(j.id)).pairId;writeFileSync(file,JSON.stringify({pairId}));}
+const preview=await api(`paper/pairs/${pairId}/preview`);
+if(preview.expectedCursor<'2026-09-04'){const j=await api(`paper/pairs/${pairId}/advance`,{snapshotId:preview.snapshotId,expectedCursor:preview.expectedCursor,through:'2026-09-04'});await wait(j.id);}
+const desk=await api(`paper/desk/${pairId}`);const a=desk.accounts.find(x=>x.code==='S1_PARTIAL');const symbol=Object.keys(a.state_json.positions)[0];assert.ok(symbol);assert.ok(desk.plans.find(x=>x.code==='S1_PARTIAL').exits.length>0);
+const chart=await api(`paper/desk/${pairId}/symbol/${symbol}`);assert.ok(chart.bars.length>130);assert.equal(chart.bars.at(-1).session_date,'2026-09-04');assert.ok(chart.accounts.find(x=>x.code==='S1_PARTIAL').position);
+const browser=await chromium.launch({headless:true,channel:process.env.BROWSER_CHANNEL??'msedge'});
+try{const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto('http://localhost:5173');await page.getByLabel('Mật khẩu quản trị').fill(process.env.SMOKE_ADMIN_PASSWORD);await page.getByRole('button',{name:'Mở workspace'}).click();await page.getByRole('combobox',{name:'Cặp danh mục'}).click();await page.getByRole('option').filter({hasText:pairId.slice(0,8)}).click();await page.getByRole('button',{name:symbol,exact:true}).first().click();await page.getByRole('dialog').waitFor();await page.locator('canvas').first().waitFor();await page.screenshot({path:'.runtime/desk-held-symbol.png',fullPage:true,animations:'disabled'});console.log('PASS real historical REPLAY: nonempty holdings, pending exit plans, click held symbol opens frozen chart/checklist. Forward unchanged.');}finally{await browser.close();}

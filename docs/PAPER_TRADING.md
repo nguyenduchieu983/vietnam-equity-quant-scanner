@@ -1,6 +1,9 @@
 # Paper S1 song song trên Windows
 
-Mở http://127.0.0.1:5173/portfolio, đăng nhập bằng mật khẩu local trong `.env`.
+Mở http://localhost:5173 để xem bàn giao dịch hằng ngày; ledger và phê duyệt
+thủ công ở `/portfolio/ledger`. Đăng nhập bằng mật khẩu local trong `.env`.
+Workflow đăng nhập Windows có thể tự cập nhật và phê duyệt paper theo ủy quyền
+đã cài: [Daily Desk](DAILY_DESK.md). Các bước thủ công bên dưới vẫn dùng được.
 Hai tài khoản độc lập, mỗi tài khoản 50 triệu VND, dùng cùng snapshot và cùng
 phiên được phê duyệt:
 

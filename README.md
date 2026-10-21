@@ -24,7 +24,9 @@ launcher for the prepared local environment, not a clean Windows installer.
 See [Windows instructions](docs/LOCAL_WINDOWS.md), [status](docs/IMPLEMENTATION_STATUS.md),
 [test report](docs/TEST_REPORT.md), [methodology](docs/BACKTEST_METHODOLOGY.md).
 
-Paired S1 paper is available at `/portfolio`: [paper guide](docs/PAPER_TRADING.md).
+Daily desk is the default localhost page at `/portfolio`; advanced paper ledger
+is at `/portfolio/ledger`. [Windows login startup and daily workflow](docs/DAILY_DESK.md).
+Paired S1 paper: [paper guide](docs/PAPER_TRADING.md).
 It separates real-data forward accounts from historical replay and requires EOD approval.
 
 The prepared local workspace now uses `DATA_MODE=real`: Dashboard, Scanner,

@@ -6,7 +6,7 @@ const browser=await chromium.launch({headless:true,channel:process.env.BROWSER_C
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('http://127.0.0.1:5173/portfolio');
+ await page.goto('http://127.0.0.1:5173/portfolio/ledger');
  await page.getByLabel('Mật khẩu quản trị').fill(process.env.SMOKE_ADMIN_PASSWORD);
  await page.getByRole('button',{name:'Mở workspace'}).click();
  try{await page.getByText('Chưa có phiên paper đã xử lý.',{exact:false}).first().waitFor();}catch(e){console.log(await page.locator('main').innerText());throw e;}
@@ -15,7 +15,8 @@ try{
  assert.equal(await page.getByRole('button',{name:'Phê duyệt & chạy cả hai'}).isDisabled(),true);
  await page.keyboard.press('Escape');
  await page.getByRole('combobox',{name:'Cặp paper',exact:true}).click();
- await page.getByRole('option').filter({hasText:'REPLAY'}).first().click();
+ const verifiedReplay=JSON.parse(readFileSync('.runtime/paper-smoke-state.json')).REPLAY;
+ await page.getByRole('option').filter({hasText:verifiedReplay.slice(0,8)}).click();
  await page.locator('canvas').first().waitFor();
  await page.getByText('Đã xử lý 2026-10-20',{exact:false}).waitFor();
  const downloadPromise=page.waitForEvent('download');

@@ -3,6 +3,7 @@ import { IsDateString, IsIn, IsOptional, IsUUID } from 'class-validator';
 import { randomUUID } from 'node:crypto';
 import { Database } from './db';
 import { AuthGuard } from './auth';
+import { dailyPlan, checklist } from './desk';
 
 class CreatePair {
   @IsUUID() snapshotId!: string;
@@ -19,6 +20,21 @@ class AdvancePair {
 @Controller('paper')
 export class PaperController {
   constructor(private readonly db: Database) {}
+  @Get('desk/:id')
+  async desk(@Param('id',ParseUUIDPipe) id:string){
+    const detail=await this.detail(id);
+    const snapshot=(await this.db.pool.query("SELECT payload_json->'instruments' AS items,payload_json->'calendar' AS calendar FROM paper_market_snapshots WHERE id=$1",[detail.pair.snapshot_id])).rows[0];
+    const sectors=Object.fromEntries(snapshot.items.map((x:any)=>[x.symbol,x.sector]));
+    return {...detail,plans:detail.accounts.map(a=>({code:a.code,...dailyPlan(a,snapshot.calendar,sectors)}))};
+  }
+  @Get('desk/:id/symbol/:symbol')
+  async symbol(@Param('id',ParseUUIDPipe) id:string,@Param('symbol') symbol:string){
+    const pair=(await this.db.pool.query('SELECT snapshot_id,cursor_day::text AS day FROM paper_pairs WHERE id=$1',[id])).rows[0];
+    if(!pair||! /^[A-Z0-9]{1,12}$/.test(symbol))throw new ConflictException('INVALID_SYMBOL_OR_PAIR');
+    const bars=(await this.db.pool.query("SELECT b FROM paper_market_snapshots s,LATERAL jsonb_array_elements(s.payload_json->'bars') b WHERE s.id=$1 AND b->>'symbol'=$2 AND b->>'session_date'<=$3 ORDER BY b->>'session_date' DESC LIMIT 1500",[pair.snapshot_id,symbol,pair.day])).rows.map(r=>r.b).reverse();
+    const accounts=(await this.db.pool.query('SELECT code,config_json,decision_json,state_json FROM paper_accounts WHERE pair_id=$1 ORDER BY code',[id])).rows;
+    return {symbol,bars,day:pair.day,accounts:accounts.map(a=>({code:a.code,checks:checklist(a,symbol),position:a.state_json.positions[symbol]??null,signal:a.decision_json.signals.find((x:any)=>x.symbol===symbol)??null}))};
+  }
   @Get()
   async list() {
     const snapshot=(await this.db.pool.query("SELECT id,as_of::text AS as_of,created_at,content_hash,quality_json,payload_json->'calendar'->>-34 AS suggested_replay_start FROM paper_market_snapshots ORDER BY as_of DESC,created_at DESC LIMIT 1")).rows[0]??null;
