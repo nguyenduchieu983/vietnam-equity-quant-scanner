@@ -171,7 +171,12 @@ def build(root: Path) -> tuple[dict, dict]:
     return payload, report
 
 
-def run(root: Path) -> dict:
+def run(root: Path, strategy: str = "S1", max_hold: int | None = None) -> dict:
+    if strategy not in ("S1", "S2", "S3", "S4"):
+        raise ValueError("UNKNOWN_STRATEGY")
+    max_hold = max_hold if max_hold is not None else (5 if strategy == "S4" else 30)
+    if not 1 <= max_hold <= 60 or (strategy == "S4" and max_hold not in (5, 10)):
+        raise ValueError("INVALID_HOLD_PERIOD")
     payload, quality = build(root)
     if quality["unexplainedAdjustmentChanges"]:
         raise ValueError("UNEXPLAINED_ADJUSTMENT_CHANGE")
@@ -184,7 +189,7 @@ def run(root: Path) -> dict:
     calendar = payload["calendar"]
     start = next(d for d in calendar if d >= "2024-09-02")
     end = calendar[-1]
-    config = {"strategy": "S1", "capital": 50000000, "maxHold": 30, "minLiquidity": 5e9,
+    config = {"strategy": strategy, "capital": 50000000, "maxHold": max_hold, "minLiquidity": 5e9,
               "buyFee": .0015, "sellFee": .0015, "sellTax": .001, "slippage": .001}
     began = time.monotonic()
     book = feature_book(payload)
@@ -218,7 +223,9 @@ def run(root: Path) -> dict:
     for name, value in (("summary", summary), ("result", result)):
         (output/f"{name}.json").write_text(json.dumps(value, indent=2, allow_nan=False), encoding="utf8")
     (root/"latest-run.txt").write_text(str(output.resolve()), encoding="utf8")
-    print(json.dumps({"output": str(output), "winRate": summary["winRateClosedPositions"], "closed": len(closed),
+    (root/f"latest-{strategy}.txt").write_text(str(output.resolve()), encoding="utf8")
+    (root/f"latest-{strategy}-{max_hold}.txt").write_text(str(output.resolve()), encoding="utf8")
+    print(json.dumps({"strategy": strategy, "maxHold": max_hold, "output": str(output), "winRate": summary["winRateClosedPositions"], "closed": len(closed),
                       "wins": wins, "losses": losses, "return": result["metrics"]["totalReturn"],
                       "maxDrawdown": result["metrics"]["maxDrawdown"], "elapsed": summary["elapsedSeconds"]}), flush=True)
     return summary
@@ -227,4 +234,7 @@ def run(root: Path) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", type=Path)
-    run(parser.parse_args().directory)
+    parser.add_argument("--strategy", choices=("S1", "S2", "S3", "S4"), default="S1")
+    parser.add_argument("--max-hold", type=int)
+    args = parser.parse_args()
+    run(args.directory, args.strategy, args.max_hold)

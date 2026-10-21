@@ -1,0 +1,292 @@
+{
+  "classification": "REAL_RESEARCH_PROVISIONAL",
+  "results": [
+    {
+      "label": "S1",
+      "run": "20261021T021104636987Z",
+      "config": {
+        "strategy": "S1",
+        "capital": 50000000,
+        "maxHold": 30,
+        "minLiquidity": 5000000000.0,
+        "buyFee": 0.0015,
+        "sellFee": 0.0015,
+        "sellTax": 0.001,
+        "slippage": 0.001
+      },
+      "period": {
+        "from": "2024-09-04",
+        "to": "2026-10-16",
+        "sessions": 528
+      },
+      "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+      "engineHash": "05c6d4bd084c1c1feba3b758dbe8304196ac02d66694d551a13f4ea1fec75069",
+      "reproducibilityHash": "c1148fbf70f00a47cfea643f09824411390f749bece87ba8181ff95103582464",
+      "closedPositions": 45,
+      "winningPositions": 17,
+      "losingPositions": 28,
+      "breakevenPositions": 0,
+      "winRateClosedPositions": 0.37777777777777777,
+      "metrics": {
+        "totalReturn": 0.05833109999999997,
+        "maxDrawdown": -0.06620907645807561,
+        "tradeCount": 48,
+        "benchmarkReturn": 0.3417676716
+      },
+      "openSymbols": [
+        "LPB",
+        "SHB",
+        "MSB"
+      ],
+      "warnings": [
+        "BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END",
+        "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+        "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+        "EX_POST_VOLUME_CAP",
+        "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+        "FIXED_PARAMETERS_NO_OPTIMIZATION",
+        "FRACTIONAL_BONUS_ROUNDED_DOWN",
+        "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+        "ILLUSTRATIVE_COSTS",
+        "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+        "NO_FORWARD_FILL_MISSING_BARS",
+        "ODD_LOT_RESIDUAL_MARKED_NOT_SOLD",
+        "OPEN_FILL_APPROXIMATION",
+        "OPEN_POSITIONS_MARKED_NOT_LIQUIDATED",
+        "PRICE_INDEX_NOT_TOTAL_RETURN",
+        "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+        "RIGHTS_NOT_EXERCISED_VALUE_ZERO",
+        "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+        "STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED",
+        "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+        "TARGET_DISABLED"
+      ]
+    },
+    {
+      "label": "S2",
+      "run": "20261021T021120027424Z",
+      "config": {
+        "strategy": "S2",
+        "capital": 50000000,
+        "maxHold": 30,
+        "minLiquidity": 5000000000.0,
+        "buyFee": 0.0015,
+        "sellFee": 0.0015,
+        "sellTax": 0.001,
+        "slippage": 0.001
+      },
+      "period": {
+        "from": "2024-09-04",
+        "to": "2026-10-16",
+        "sessions": 528
+      },
+      "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+      "engineHash": "05c6d4bd084c1c1feba3b758dbe8304196ac02d66694d551a13f4ea1fec75069",
+      "reproducibilityHash": "ddbd301dcb0ed4ef2da1a25d6ce253d23ec1f866f6a4ff5ec800c41b61ea06bf",
+      "closedPositions": 69,
+      "winningPositions": 18,
+      "losingPositions": 51,
+      "breakevenPositions": 0,
+      "winRateClosedPositions": 0.2608695652173913,
+      "metrics": {
+        "totalReturn": -0.06784997999999998,
+        "maxDrawdown": -0.0897206541900878,
+        "tradeCount": 73,
+        "benchmarkReturn": 0.3417676716
+      },
+      "openSymbols": [
+        "DXG",
+        "ASM",
+        "HSG",
+        "VPB",
+        "MSB"
+      ],
+      "warnings": [
+        "BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END",
+        "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+        "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+        "EX_POST_VOLUME_CAP",
+        "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+        "FIXED_PARAMETERS_NO_OPTIMIZATION",
+        "FRACTIONAL_BONUS_ROUNDED_DOWN",
+        "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+        "ILLUSTRATIVE_COSTS",
+        "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+        "NO_FORWARD_FILL_MISSING_BARS",
+        "OPEN_FILL_APPROXIMATION",
+        "OPEN_POSITIONS_MARKED_NOT_LIQUIDATED",
+        "PRICE_INDEX_NOT_TOTAL_RETURN",
+        "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+        "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+        "STALE_OR_DELISTED_HOLDING_MARK",
+        "STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED",
+        "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+        "TARGET_DISABLED"
+      ]
+    },
+    {
+      "label": "S3",
+      "run": "20261021T021134897577Z",
+      "config": {
+        "strategy": "S3",
+        "capital": 50000000,
+        "maxHold": 30,
+        "minLiquidity": 5000000000.0,
+        "buyFee": 0.0015,
+        "sellFee": 0.0015,
+        "sellTax": 0.001,
+        "slippage": 0.001
+      },
+      "period": {
+        "from": "2024-09-04",
+        "to": "2026-10-16",
+        "sessions": 528
+      },
+      "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+      "engineHash": "05c6d4bd084c1c1feba3b758dbe8304196ac02d66694d551a13f4ea1fec75069",
+      "reproducibilityHash": "68f5710bb8d5b42cbb0825a099844a8aaf27b5d7ba05cdca78e22971eaf02b27",
+      "closedPositions": 101,
+      "winningPositions": 22,
+      "losingPositions": 79,
+      "breakevenPositions": 0,
+      "winRateClosedPositions": 0.21782178217821782,
+      "metrics": {
+        "totalReturn": 0.01242407000000001,
+        "maxDrawdown": -0.1360161517951782,
+        "tradeCount": 102,
+        "benchmarkReturn": 0.3417676716
+      },
+      "openSymbols": [
+        "VIX",
+        "HDB"
+      ],
+      "warnings": [
+        "BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END",
+        "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+        "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+        "EX_POST_VOLUME_CAP",
+        "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+        "FIXED_PARAMETERS_NO_OPTIMIZATION",
+        "FRACTIONAL_BONUS_ROUNDED_DOWN",
+        "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+        "ILLUSTRATIVE_COSTS",
+        "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+        "NO_FORWARD_FILL_MISSING_BARS",
+        "OPEN_FILL_APPROXIMATION",
+        "OPEN_POSITIONS_MARKED_NOT_LIQUIDATED",
+        "PRICE_INDEX_NOT_TOTAL_RETURN",
+        "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+        "RIGHTS_NOT_EXERCISED_VALUE_ZERO",
+        "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+        "STALE_OR_DELISTED_HOLDING_MARK",
+        "STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED",
+        "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+        "TARGET_DISABLED"
+      ]
+    },
+    {
+      "label": "S4-5",
+      "run": "20261021T021245721957Z",
+      "config": {
+        "strategy": "S4",
+        "capital": 50000000,
+        "maxHold": 5,
+        "minLiquidity": 5000000000.0,
+        "buyFee": 0.0015,
+        "sellFee": 0.0015,
+        "sellTax": 0.001,
+        "slippage": 0.001
+      },
+      "period": {
+        "from": "2024-09-04",
+        "to": "2026-10-16",
+        "sessions": 528
+      },
+      "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+      "engineHash": "156895e806411ac3bac46ae3bffcb4700b0e80623fc47c1dde37c51243622434",
+      "reproducibilityHash": "5fef98dad3c616bb0b1874b402f83b01169769fda0663786e8233e7edc02bb69",
+      "closedPositions": 15,
+      "winningPositions": 7,
+      "losingPositions": 8,
+      "breakevenPositions": 0,
+      "winRateClosedPositions": 0.4666666666666667,
+      "metrics": {
+        "totalReturn": 0.007929800000000098,
+        "maxDrawdown": -0.007216570017991999,
+        "tradeCount": 15,
+        "benchmarkReturn": 0.3417676716
+      },
+      "openSymbols": [],
+      "warnings": [
+        "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+        "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+        "EX_POST_VOLUME_CAP",
+        "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+        "FIXED_PARAMETERS_NO_OPTIMIZATION",
+        "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+        "ILLUSTRATIVE_COSTS",
+        "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+        "NO_FORWARD_FILL_MISSING_BARS",
+        "OPEN_FILL_APPROXIMATION",
+        "PRICE_INDEX_NOT_TOTAL_RETURN",
+        "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+        "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+        "SMALL_TRADE_SAMPLE",
+        "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+        "TARGET_DISABLED"
+      ]
+    },
+    {
+      "label": "S4-10",
+      "run": "20261021T021308913404Z",
+      "config": {
+        "strategy": "S4",
+        "capital": 50000000,
+        "maxHold": 10,
+        "minLiquidity": 5000000000.0,
+        "buyFee": 0.0015,
+        "sellFee": 0.0015,
+        "sellTax": 0.001,
+        "slippage": 0.001
+      },
+      "period": {
+        "from": "2024-09-04",
+        "to": "2026-10-16",
+        "sessions": 528
+      },
+      "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+      "engineHash": "156895e806411ac3bac46ae3bffcb4700b0e80623fc47c1dde37c51243622434",
+      "reproducibilityHash": "ed8bd0e866f5b0555aa2a9643ed7f41d60536a264a06e0f78f9f1d31bdb7019a",
+      "closedPositions": 15,
+      "winningPositions": 6,
+      "losingPositions": 9,
+      "breakevenPositions": 0,
+      "winRateClosedPositions": 0.4,
+      "metrics": {
+        "totalReturn": 0.0030220999999999165,
+        "maxDrawdown": -0.010542169638103652,
+        "tradeCount": 15,
+        "benchmarkReturn": 0.3417676716
+      },
+      "openSymbols": [],
+      "warnings": [
+        "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+        "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+        "EX_POST_VOLUME_CAP",
+        "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+        "FIXED_PARAMETERS_NO_OPTIMIZATION",
+        "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+        "ILLUSTRATIVE_COSTS",
+        "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+        "NO_FORWARD_FILL_MISSING_BARS",
+        "OPEN_FILL_APPROXIMATION",
+        "PRICE_INDEX_NOT_TOTAL_RETURN",
+        "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+        "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+        "SMALL_TRADE_SAMPLE",
+        "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+        "TARGET_DISABLED"
+      ]
+    }
+  ]
+}
