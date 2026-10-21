@@ -19,7 +19,7 @@ const nav = [
   { path: '/scanner', icon: 'pi pi-filter', label: 'Scanner', index: '02' },
   { path: '/symbols/FPT', icon: 'pi pi-chart-line', label: 'Phân tích mã', index: '03' },
   { path: '/lab', icon: 'pi pi-sliders-h', label: 'Strategy Lab', index: '04' },
-  { path: '/portfolio', icon: 'pi pi-wallet', label: 'Paper Portfolio', index: '05' },
+  { path: '/portfolio', icon: 'pi pi-wallet', label: 'Danh mục & kế hoạch', index: '05' },
   { path: '/operations', icon: 'pi pi-server', label: 'Dữ liệu & vận hành', index: '06' }
 ];
 async function login() {
