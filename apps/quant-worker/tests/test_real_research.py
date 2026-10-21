@@ -65,3 +65,17 @@ class RealResearchTests(unittest.TestCase):
         self.assertEqual(r["trades"][0]["dividend_income"], "9500.00")
         self.assertEqual(r["equity"][-1]["nav"], "50005500.00")
         self.assertEqual(r["equity"][-1]["pending_cash"], "9500.00")
+
+    def test_paper_calendar_extension_does_not_release_future_cash_or_unknown_bonus(self):
+        p, c, signals = self.fixture()
+        p["actions"] = [
+            {"type": "CASH_DIVIDEND", "symbol": "ABC", "cash_amount": 100, "ex_date": "2024-01-03",
+             "known_at": "2024-01-01", "payable_date": "2024-02-01"},
+            {"type": "STOCK_DIVIDEND", "symbol": "ABC", "ratio": 1, "ex_date": "2024-01-03",
+             "known_at": "2024-01-01", "available_date": None}]
+        short = {**p, "calendar": p["calendar"][:3], "bars": [b for b in p["bars"] if b["session_date"] <= "2024-01-03"]}
+        first = simulate(short, c, "2024-01-02", "2024-01-03", {"ABC": {}}, signal_source=signals, checkpoint=True)
+        resumed = simulate(p, c, "2024-01-04", "2024-01-12", {"ABC": {}}, signal_source=signals, checkpoint=True, resume=first["checkpoint"])
+        self.assertEqual(resumed["equity"][-1]["pending_cash"], "10000.00")
+        self.assertEqual(resumed["open_positions"]["ABC"]["qty"], 100)
+        self.assertEqual(resumed["checkpoint"]["positions"]["ABC"]["locks"], [("9999-12-31", 100)])

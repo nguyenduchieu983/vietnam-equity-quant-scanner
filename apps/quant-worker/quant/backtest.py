@@ -31,7 +31,8 @@ def validate_config(payload: dict, config: dict) -> None:
 
 def simulate(payload: dict, config: dict, start: str, end: str, book: dict | None = None,
              progress: Callable[[float], None] | None = None,
-             signal_source: Callable | None = None, rules: dict = RULES) -> dict:
+             signal_source: Callable | None = None, rules: dict = RULES,
+             resume: dict | None = None, checkpoint: bool = False) -> dict:
     book = book or feature_book(payload)
     calendar = payload["calendar"]
     start_idx, end_idx = calendar.index(start), calendar.index(end)
@@ -52,7 +53,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
     if any(v is not None and (config["strategy"] != "S1" or v not in (1, 2)) for v in (target_r, breakeven_r)):
         raise ValueError("INVALID_S1_PROFIT_RULE")
     positions: dict[str, dict[str, Any]] = {}
-    pending: list[tuple[int, Decimal]] = []
+    pending: list[tuple[int | str, Decimal]] = []
     equity: list[dict] = []
     trades: list[dict] = []
     orders: list[dict] = []
@@ -66,6 +67,14 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
         warnings.add("BREAKEVEN_ESTIMATED_COSTS_NOT_GUARANTEED")
     peak = initial
     benchmark_base = decimal(bars[("VNINDEX", start)]["open"])
+    if resume is not None:
+        cash = decimal(resume["cash"])
+        pending = [(day if isinstance(day, str) and "-" in day else int(day), decimal(amount)) for day, amount in resume["pending"]]
+        peak = decimal(resume["peak"])
+        benchmark_base = decimal(resume["benchmark_base"])
+        decimal_fields = {"entry", "cost", "stop", "last", "income", "target", "be_trigger"}
+        positions = {s: {k: decimal(v) if k in decimal_fields else v for k, v in p.items()}
+                     for s, p in resume["positions"].items()}
     clock_start = time.monotonic()
 
     def nav_at(session: str, price_field: str) -> tuple[Decimal, Decimal, dict[str, Decimal]]:
@@ -88,11 +97,14 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
             raise TimeoutError("BACKTEST_RUNTIME_LIMIT")
         if progress and (idx-start_idx) % 10 == 0:
             progress((idx-start_idx)/max(1, end_idx-start_idx))
-        settled = sum((amount for day, amount in pending if day <= idx), Decimal(0))
+        def due(release: int | str) -> bool:
+            return release <= idx if isinstance(release, int) else release <= session
+
+        settled = sum((amount for day, amount in pending if due(day)), Decimal(0))
         cash += settled
         if settled:
             cash_events.append({"session": session, "kind": "SETTLEMENT", "amount": str(settled)})
-        pending = [(day, amount) for day, amount in pending if day > idx]
+        pending = [(day, amount) for day, amount in pending if not due(day)]
         if breakeven_r is not None and idx:
             for symbol, position in positions.items():
                 prior = book.get(symbol, {}).get(calendar[idx-1], {})
@@ -129,7 +141,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 release = next((j for j, d in enumerate(calendar) if available and d >= available), len(calendar)+1)
                 if not available:
                     warnings.add("BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END")
-                position.setdefault("locks", []).append((release, bonus))
+                position.setdefault("locks", []).append(((available or "9999-12-31") if checkpoint else release, bonus))
                 old_qty = position["qty"]
                 position["qty"] += bonus
                 position["entry"] *= decimal(old_qty)/position["qty"]
@@ -176,7 +188,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 if payable_idx == idx:
                     cash += amount
                 else:
-                    pending.append((payable_idx, amount))
+                    pending.append((event["payable_date"] if checkpoint else payable_idx, amount))
                 cash_events.append({"session": session, "kind": "DIVIDEND_RECEIVABLE", "amount": str(amount)})
             else:
                 raise ValueError("UNSUPPORTED_CORPORATE_ACTION")
@@ -202,7 +214,7 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
             fill_bar = {**bar, "open": str(max(decimal(bar["open"]), position["target"]))} if target_exit else bar
             price, reason, reference = fill_price(fill_bar, "SELL", fees["slippage"], rules, position["stop"] if stop_hit else None)
             capacity = int(decimal(bar["volume"])*decimal(rules["participation"])) // rules["board_lot"]*rules["board_lot"]
-            locked = sum(q for release, q in position.get("locks", []) if release > idx)
+            locked = sum(q for release, q in position.get("locks", []) if not due(release))
             available_qty = max(0, position["qty"]-locked)
             quantity = min(available_qty, capacity)
             if partial and target_exit:
@@ -312,6 +324,10 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
         warnings.add("OPEN_POSITIONS_MARKED_NOT_LIQUIDATED")
     if len(trades) < 30:
         warnings.add("SMALL_TRADE_SAMPLE")
-    return {"equity": equity, "trades": trades, "orders": orders, "metrics": metrics(equity, trades, orders, float(initial)),
+    result = {"equity": equity, "trades": trades, "orders": orders, "metrics": metrics(equity, trades, orders, float(initial)),
             "warnings": sorted(warnings), "cash_events": cash_events,
             "open_positions": {s: {k: str(v) if isinstance(v, Decimal) else v for k, v in p.items()} for s, p in positions.items()}}
+    if checkpoint:
+        result["checkpoint"] = {"cash": str(cash), "pending": [(d, str(v)) for d, v in pending],
+                                "peak": str(peak), "benchmark_base": str(benchmark_base), "positions": result["open_positions"]}
+    return result

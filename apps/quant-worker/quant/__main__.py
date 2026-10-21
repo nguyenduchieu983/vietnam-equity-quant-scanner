@@ -40,7 +40,7 @@ def consume() -> None:
                     FROM jobs j WHERE b.job_id=j.id AND j.status='FAILED' AND b.status IN ('QUEUED','RUNNING')""")
                 job = conn.execute("""UPDATE jobs SET status='RUNNING',attempts=attempts+1,
                     lease_until=now()+interval '2 minutes' WHERE id=(
-                    SELECT id FROM jobs WHERE status='QUEUED' AND NOT cancel_requested AND is_demo=%s
+                    SELECT id FROM jobs WHERE status='QUEUED' AND NOT cancel_requested AND (is_demo=%s OR kind='PAPER')
                     AND (kind<>'BACKTEST' OR NOT EXISTS(SELECT 1 FROM jobs active WHERE active.kind='BACKTEST' AND active.status='RUNNING'))
                     ORDER BY created_at
                     FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING id,kind,payload_json""",
@@ -56,6 +56,9 @@ def consume() -> None:
                         result = {"scanId": run_scan(job[2]["datasetId"], job[2].get("session"))}
                     elif job[1] == "BACKTEST":
                         result = run_backtest(job[2]["backtestId"], str(job[0]))
+                    elif job[1] == "PAPER":
+                        from .paper import run
+                        result = run(str(job[0]), job[2])
                     else:
                         result = {"runId": ingest(FixtureProvider(ROOT / "tests/fixtures/eod-demo.json"))}
                     with connect() as conn:

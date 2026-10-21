@@ -62,3 +62,13 @@ because of missing bars, historical metadata and corporate-action limitations.
 31 Python tests including native DB integration, Ruff and mypy pass. See
 [real S1 report](REAL_S1_BACKTEST_2026-10-21.md). The UI remains DEMO; production
 provider ingestion, M4 and reboot acceptance are still pending.
+
+2026-10-21 paper update (supersedes the placeholder statements above): paired
+S1 baseline / partial 1R + trailing 2 ATR + maxHold15 is implemented at
+`/portfolio`, using separate public real-data snapshots, durable PostgreSQL
+checkpoints and manual batch approvals. Forward starts with cash only; a
+separate 34-session replay populates comparison charts and ledgers. Restart,
+idempotency, ledger parity/immutability and browser checks are documented in
+[PAPER_TRADING.md](PAPER_TRADING.md). 43 Python tests pass. General custom paper
+order entry, automatic EOD scheduling and production reboot acceptance remain
+open; this is not a claim that every original M4 production criterion is complete.

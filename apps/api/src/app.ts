@@ -1,4 +1,5 @@
 import { BacktestsController } from './backtests';
+import { PaperController } from './paper';
 import { Body, Controller, Get, HttpException, HttpStatus, Module, Param, ParseUUIDPipe, Post, Query, ServiceUnavailableException, UseGuards } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -127,7 +128,7 @@ class AppController {
     } }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }])
   ],
-  controllers: [HealthController, AuthController, AppController, ResearchController, BacktestsController],
+  controllers: [HealthController, AuthController, AppController, ResearchController, BacktestsController, PaperController],
   providers: [Database, AuthGuard, { provide: APP_GUARD, useClass: ThrottlerGuard }]
 })
 export class AppModule {}

@@ -24,7 +24,10 @@ launcher for the prepared local environment, not a clean Windows installer.
 See [Windows instructions](docs/LOCAL_WINDOWS.md), [status](docs/IMPLEMENTATION_STATUS.md),
 [test report](docs/TEST_REPORT.md), [methodology](docs/BACKTEST_METHODOLOGY.md).
 
+Paired S1 paper is available at `/portfolio`: [paper guide](docs/PAPER_TRADING.md).
+It separates real-data forward accounts from historical replay and requires EOD approval.
+
 Still open: licensed real-data adapter and incremental EOD scheduler, full-scale
-performance benchmark, paper portfolio M4, clean-server install and reboot
+performance benchmark, unrestricted manual paper order entry, clean-server install and reboot
 acceptance. See [Linux runbook](docs/OPERATIONS.md) for native deployment scripts.
 Not investment advice.

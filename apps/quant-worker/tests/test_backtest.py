@@ -165,6 +165,13 @@ class BacktestTests(unittest.TestCase):
         self.assertEqual(r["trades"][1]["exit_price"], "10400")
         self.assertEqual(sum(D(t["pnl"]) for t in r["trades"]), D("131650.00"))
         self.assertEqual(D(r["equity"][-1]["nav"]), D("50131650.00"))
+        first = simulate(self.payload, config, self.days[1], self.days[4], self.book,
+                         signal_source=signal, checkpoint=True)
+        import json
+        rest = simulate(self.payload, config, self.days[5], self.days[-1], self.book,
+                        signal_source=signal, resume=json.loads(json.dumps(first["checkpoint"])), checkpoint=True)
+        for key in ("equity", "orders", "trades", "cash_events"):
+            self.assertEqual(r[key], first[key]+rest[key])
         from quant.s1_experiments import summarize
         self.assertEqual(summarize(r, self.days)["closed"], 1)
         # Before the runner closes, the partial profit must not count as a closed win.
@@ -213,6 +220,20 @@ class BacktestTests(unittest.TestCase):
         self.assertEqual([t["quantity"] for t in split["trades"]], [100, 100, 100])
         self.assertEqual(split["open_positions"]["SIM"]["qty"], 600)
         self.assertNotIn("target", split["open_positions"]["SIM"])
+
+    def test_checkpoint_resume_matches_uninterrupted_cash_settlement_and_fills(self):
+        full = self.run_sim()
+        state = None
+        chunks = []
+        for start, end in ((1, 3), (4, 6), (7, 11)):
+            chunk = simulate(self.payload, self.config, self.days[start], self.days[end], self.book,
+                             signal_source=self.signal, resume=state, checkpoint=True)
+            import json
+            state = json.loads(json.dumps(chunk["checkpoint"]))  # DB JSON round trip
+            chunks.append(chunk)
+        for key in ("equity", "trades", "orders", "cash_events"):
+            self.assertEqual(full[key], [v for chunk in chunks for v in chunk[key]])
+        self.assertEqual(full["open_positions"], state["positions"])
 
     def test_ticks_limits_and_risk_caps(self):
         self.assertEqual(tick_price(D(10001), "HOSE", "BUY", self.days[0]), D(10050))

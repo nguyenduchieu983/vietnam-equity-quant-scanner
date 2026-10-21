@@ -1,0 +1,37 @@
+{
+  "source": "VNDIRECT_PUBLIC_REAL",
+  "mode": "REPLAY_NOT_FORWARD",
+  "period": [
+    "2026-09-03",
+    "2026-10-20"
+  ],
+  "checks": [
+    "restart persistence",
+    "approval idempotency",
+    "NAV identity",
+    "uninterrupted engine parity excluding benchmark base",
+    "immutable snapshots/approvals/sessions"
+  ],
+  "accounts": [
+    {
+      "code": "S1",
+      "sessions": 34,
+      "nav": "49732380.00",
+      "closed": 3,
+      "wins": 0,
+      "winRate": 0.0,
+      "return": -0.005352400000000035,
+      "drawdown": -0.018408719365950073
+    },
+    {
+      "code": "S1_PARTIAL",
+      "sessions": 34,
+      "nav": "50146342.50",
+      "closed": 3,
+      "wins": 1,
+      "winRate": 0.3333333333333333,
+      "return": 0.0029268499999999253,
+      "drawdown": -0.010127929323308938
+    }
+  ]
+}
