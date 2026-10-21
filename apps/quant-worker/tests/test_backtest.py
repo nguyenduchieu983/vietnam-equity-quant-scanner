@@ -67,6 +67,31 @@ class BacktestTests(unittest.TestCase):
         changed = self.run_sim(config={**config, "s1ExitEma": 20})
         self.assertEqual(result["trades"], changed["trades"])
 
+    def test_trailing_stop_is_causal_ratchets_and_adjusts_for_split(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1TrailAtr": 3}
+        self.book["SIM"][self.days[3]] = {"close": 11000, "atr14": 500, "factor": 1}
+        self.book["SIM"][self.days[4]] = {"close": 10500, "atr14": 500, "factor": 1}
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM" and bar["session_date"] == self.days[4]:
+                bar["low"] = "9800"
+        result = self.run_sim(config=config)
+        self.assertEqual(result["trades"][0]["exit_date"], self.days[5])
+        self.assertEqual(result["trades"][0]["exit_price"], "9500")
+        # The falling prior close must not loosen the stop from 9500 to 9000.
+        self.book["SIM"][self.days[6]] = {"close": 20000, "atr14": 1, "factor": 1}
+        self.assertEqual(result["trades"], self.run_sim(config=config)["trades"])
+        payload = copy.deepcopy(self.payload)
+        payload["actions"] = [{"symbol": "SIM", "type": "SPLIT", "ratio": 2,
+                               "ex_date": self.days[5], "known_at": self.days[0]}]
+        for bar in payload["bars"]:
+            if bar["symbol"] == "SIM" and bar["session_date"] >= self.days[5]:
+                for key in ("open", "high", "low", "close", "floor", "ceiling"):
+                    bar[key] = str(D(bar[key])/2)
+        split = self.run_sim(payload=payload, config=config)
+        self.assertEqual(split["trades"][0]["exit_price"], "4750")
+        self.assertEqual(split["trades"][0]["quantity"], 200)
+        self.assertEqual(split["trades"][0]["pnl"], result["trades"][0]["pnl"])
+
     def test_ticks_limits_and_risk_caps(self):
         self.assertEqual(tick_price(D(10001), "HOSE", "BUY", self.days[0]), D(10050))
         self.assertEqual(tick_price(D(10001), "HOSE", "SELL", self.days[0]), D(10000))

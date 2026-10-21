@@ -42,6 +42,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
     exit_ema = config.get("s1ExitEma", 50)
     if exit_ema not in (20, 50):
         raise ValueError("INVALID_S1_EXIT_EMA")
+    trail_atr = config.get("s1TrailAtr")
+    if trail_atr is not None and (config["strategy"] != "S1" or trail_atr not in (2, 3)):
+        raise ValueError("INVALID_S1_TRAIL_ATR")
     positions: dict[str, dict[str, Any]] = {}
     pending: list[tuple[int, Decimal]] = []
     equity: list[dict] = []
@@ -79,6 +82,13 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
         if settled:
             cash_events.append({"session": session, "kind": "SETTLEMENT", "amount": str(settled)})
         pending = [(day, amount) for day, amount in pending if day > idx]
+        # Ratchet using only the previous session, before today's action adjustment.
+        if trail_atr is not None and idx:
+            for symbol, position in positions.items():
+                prior = book.get(symbol, {}).get(calendar[idx-1], {})
+                if prior.get("atr14") is not None and prior.get("factor", 0) > 0:
+                    candidate_stop = (decimal(prior["close"])-decimal(trail_atr)*decimal(prior["atr14"]))/decimal(prior["factor"])
+                    position["stop"] = max(position["stop"], candidate_stop)
         for event in payload.get("actions", []):
             if event["ex_date"] != session or event["symbol"] not in positions:
                 continue

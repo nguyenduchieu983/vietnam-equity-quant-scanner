@@ -1,0 +1,1027 @@
+{
+  "classification": "EXPLORATORY_REUSED_VALIDATION_AND_TEST",
+  "candidates": [
+    {
+      "name": "baseline",
+      "entry": "original",
+      "hold": 30,
+      "trail": null
+    },
+    {
+      "name": "hold15",
+      "entry": "original",
+      "hold": 15,
+      "trail": null
+    },
+    {
+      "name": "trail3",
+      "entry": "original",
+      "hold": 30,
+      "trail": 3
+    },
+    {
+      "name": "trail2",
+      "entry": "original",
+      "hold": 30,
+      "trail": 2
+    },
+    {
+      "name": "trend200",
+      "entry": "trend200",
+      "hold": 30,
+      "trail": null
+    },
+    {
+      "name": "trend200_hold15",
+      "entry": "trend200",
+      "hold": 15,
+      "trail": null
+    },
+    {
+      "name": "volume1",
+      "entry": "volume1",
+      "hold": 30,
+      "trail": null
+    },
+    {
+      "name": "extension2atr",
+      "entry": "extension2atr",
+      "hold": 30,
+      "trail": null
+    },
+    {
+      "name": "trail3_hold15",
+      "entry": "original",
+      "hold": 15,
+      "trail": 3
+    }
+  ],
+  "periods": {
+    "validation": [
+      "2024-02-15",
+      "2024-06-28"
+    ],
+    "comparison": [
+      "2024-09-04",
+      "2026-10-16"
+    ]
+  },
+  "slippage": {
+    "base": 0.001,
+    "stress": 0.003
+  },
+  "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+  "engineHash": "11434e48cc28bc0f1db7816de0606d791075a89cbfba9fcd213883f3118f8402",
+  "selection": "At both validation costs: >=8 closed, win rate strictly above baseline and >= hold15, return and drawdown >= BOTH controls; highest minimum validation win rate, then minimum return, then name. Otherwise baseline. Comparison confirmation requires same dominance and >=30 closed at both costs.",
+  "priorStudyNewVariants": 5,
+  "newVariants": 7,
+  "selected": "baseline",
+  "confirmed": false,
+  "results": {
+    "validation_base": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 15,
+        "wins": 6,
+        "losses": 9,
+        "winRate": 0.4,
+        "return": 0.03234347999999998,
+        "drawdown": -0.04467182877165244,
+        "openSymbols": [
+          "LPB",
+          "TCH",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "e225aa1bd25002c91009b55ddebe33b9c72be50871728ad58773e1df3bea4e10"
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 24,
+        "wins": 11,
+        "losses": 13,
+        "winRate": 0.4583333333333333,
+        "return": 0.012687600000000021,
+        "drawdown": -0.04350358411570212,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "0ee9c35900b77a4c3732bb4a15d178865067e1c5d5d208b3d8ab7870bff16f44"
+      },
+      {
+        "name": "trail3",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3
+        },
+        "closed": 19,
+        "wins": 4,
+        "losses": 15,
+        "winRate": 0.21052631578947367,
+        "return": -0.02346170000000003,
+        "drawdown": -0.06608793271929392,
+        "openSymbols": [
+          "NTL",
+          "LPB",
+          "POW",
+          "CTF"
+        ],
+        "resultHash": "b5c3baebd7c39244270635abc01a3e8ddbf9930f35cc298ae718af26e572d402"
+      },
+      {
+        "name": "trail2",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 2
+        },
+        "closed": 24,
+        "wins": 7,
+        "losses": 17,
+        "winRate": 0.2916666666666667,
+        "return": -0.016151649999999962,
+        "drawdown": -0.06386695303030596,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "a79c381484848b695db5b78139d32ba7cb22e8b60c2427ee99db908d94dbc9cc"
+      },
+      {
+        "name": "trend200",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 15,
+        "wins": 6,
+        "losses": 9,
+        "winRate": 0.4,
+        "return": 0.03234347999999998,
+        "drawdown": -0.04467182877165244,
+        "openSymbols": [
+          "LPB",
+          "TCH",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "9bfac79ce30d8ba26e7b2db2d92669d871fc3822ec2db6cdf945a6882a2ae0a8"
+      },
+      {
+        "name": "trend200_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 24,
+        "wins": 11,
+        "losses": 13,
+        "winRate": 0.4583333333333333,
+        "return": 0.012687600000000021,
+        "drawdown": -0.04350358411570212,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "8fa831f93c2f9a421a54928f30ce46ee097973944df04b5b0efd488e9e96fe41"
+      },
+      {
+        "name": "volume1",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 14,
+        "wins": 5,
+        "losses": 9,
+        "winRate": 0.35714285714285715,
+        "return": 0.014216659999999992,
+        "drawdown": -0.03270345301960983,
+        "openSymbols": [
+          "LPB",
+          "TCH",
+          "TIG"
+        ],
+        "resultHash": "8fba1f6bef60ce3c0ec11d6256a81c0d951791ada094fb3e9cf9d4b3976cec48"
+      },
+      {
+        "name": "extension2atr",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 18,
+        "wins": 4,
+        "losses": 14,
+        "winRate": 0.2222222222222222,
+        "return": -0.027209469999999958,
+        "drawdown": -0.059683171236964316,
+        "openSymbols": [
+          "TCH",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "c2c73676790464012e8515dc3b4582c0326ffa1a7935ac7b601c9685c4b970bc"
+      },
+      {
+        "name": "trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3
+        },
+        "closed": 24,
+        "wins": 10,
+        "losses": 14,
+        "winRate": 0.4166666666666667,
+        "return": 0.004494199999999893,
+        "drawdown": -0.04836949480323449,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "34181b178960996baa5121075c48f56254f202eab19cf5e9ab14e111cd35996f"
+      }
+    ],
+    "validation_stress": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 15,
+        "wins": 6,
+        "losses": 9,
+        "winRate": 0.4,
+        "return": 0.007400749999999956,
+        "drawdown": -0.05189613853032103,
+        "openSymbols": [
+          "TCH",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "0156cdd05dc75a4ff6522f87ba7aa880852dd490db64f7d3ff3a8300826a7e28"
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 20,
+        "wins": 8,
+        "losses": 12,
+        "winRate": 0.4,
+        "return": 0.0026133399999999085,
+        "drawdown": -0.052266751994094605,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "2d8e15bef3aa3f11d49e8e49afac0df458b36e4c793cbfa8f5cd2b557917bdb1"
+      },
+      {
+        "name": "trail3",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3
+        },
+        "closed": 17,
+        "wins": 4,
+        "losses": 13,
+        "winRate": 0.23529411764705882,
+        "return": -0.010675180000000006,
+        "drawdown": -0.055380401868044965,
+        "openSymbols": [
+          "NTL",
+          "LPB",
+          "POW"
+        ],
+        "resultHash": "7b11eb9fcd5a0a75fc8a74a845b13361d7c95975844113d4cfb255640c652afd"
+      },
+      {
+        "name": "trail2",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 2
+        },
+        "closed": 21,
+        "wins": 7,
+        "losses": 14,
+        "winRate": 0.3333333333333333,
+        "return": -0.006422099999999986,
+        "drawdown": -0.056657180368931574,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "6eca9b9bca216b2a7dc82d16be23b42f1f75fc1517d08a91b1d519fb4bbbe869"
+      },
+      {
+        "name": "trend200",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 15,
+        "wins": 6,
+        "losses": 9,
+        "winRate": 0.4,
+        "return": 0.007400749999999956,
+        "drawdown": -0.05189613853032103,
+        "openSymbols": [
+          "TCH",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "202cc5bdf386e5f648e3cf1391c07d7bf84486563f9e35c0d15875c9d044c931"
+      },
+      {
+        "name": "trend200_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 20,
+        "wins": 8,
+        "losses": 12,
+        "winRate": 0.4,
+        "return": 0.0026133399999999085,
+        "drawdown": -0.052266751994094605,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "f14acf0645d86dc6c5e79c08b5b7b1657bed2cfe271f058170c07b5f19a44ab3"
+      },
+      {
+        "name": "volume1",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 14,
+        "wins": 6,
+        "losses": 8,
+        "winRate": 0.42857142857142855,
+        "return": 0.022121489999999966,
+        "drawdown": -0.03264691621366057,
+        "openSymbols": [
+          "LPB",
+          "TCH",
+          "TIG"
+        ],
+        "resultHash": "d3c432aec87727bdc31076d000a3eb19d13ced299d617a21b84abda0452a273a"
+      },
+      {
+        "name": "extension2atr",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 14,
+        "wins": 4,
+        "losses": 10,
+        "winRate": 0.2857142857142857,
+        "return": -0.007464380000000048,
+        "drawdown": -0.04430564328705313,
+        "openSymbols": [
+          "TCH",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "06fc537be593d8ba11ac43a82ed65241e177add85c3046dd50fcf8d20aa9f00e"
+      },
+      {
+        "name": "trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3
+        },
+        "closed": 20,
+        "wins": 8,
+        "losses": 12,
+        "winRate": 0.4,
+        "return": 0.004309090000000015,
+        "drawdown": -0.05091266286523918,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "4140bf88fe74930b1822c5bbdbeca6713f7884787907a2822f982381a3d9a2a9"
+      }
+    ],
+    "comparison_base": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 45,
+        "wins": 17,
+        "losses": 28,
+        "winRate": 0.37777777777777777,
+        "return": 0.05833109999999997,
+        "drawdown": -0.06620907645807561,
+        "openSymbols": [
+          "LPB",
+          "SHB",
+          "MSB"
+        ],
+        "resultHash": "7a14f323ce227dcd9f6d68a08703a4fbb6fa439f6a975e2c1ff8ad1000cb16f9"
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 60,
+        "wins": 29,
+        "losses": 31,
+        "winRate": 0.48333333333333334,
+        "return": 0.07642159999999998,
+        "drawdown": -0.055885116476841655,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "MSB"
+        ],
+        "resultHash": "74eb65674e33402f09fde2889fbb1a009592d2a7b30ef44253ad03aec0f64455"
+      },
+      {
+        "name": "trail3",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3
+        },
+        "closed": 51,
+        "wins": 18,
+        "losses": 33,
+        "winRate": 0.35294117647058826,
+        "return": 0.05536914999999998,
+        "drawdown": -0.04769004792775508,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "b9b73f2e5e00f80c9e4b50f40397b3060789f5fa60b605c70cb3281dda29ee8d"
+      },
+      {
+        "name": "trail2",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 2
+        },
+        "closed": 66,
+        "wins": 22,
+        "losses": 44,
+        "winRate": 0.3333333333333333,
+        "return": 0.01317440000000003,
+        "drawdown": -0.06951804795519927,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "fe23d65c19bca8da390fe95b7644f58f837c6e98939a2bc61ed9f766d299b234"
+      },
+      {
+        "name": "trend200",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 51,
+        "wins": 17,
+        "losses": 34,
+        "winRate": 0.3333333333333333,
+        "return": 0.06789242999999989,
+        "drawdown": -0.08540558353650525,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "e0e7db3c09b2c46632a271b3ad23193df39938da165f6fb26c210a6dd9c13dbe"
+      },
+      {
+        "name": "trend200_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 65,
+        "wins": 29,
+        "losses": 36,
+        "winRate": 0.4461538461538462,
+        "return": 0.061225429999999914,
+        "drawdown": -0.07789690938960582,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "ef042d2ee1de6dfa7e20d7159a5ce002e6bc6836c5877cb081cc6e4fef5a96c3"
+      },
+      {
+        "name": "volume1",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 53,
+        "wins": 18,
+        "losses": 35,
+        "winRate": 0.33962264150943394,
+        "return": 0.009108799999999917,
+        "drawdown": -0.07733766312447746,
+        "openSymbols": [
+          "SHB"
+        ],
+        "resultHash": "014532b52f5db5be236c0a1d2be6b399d1c17698369ae06b22bbf33bfdafa0f0"
+      },
+      {
+        "name": "extension2atr",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 55,
+        "wins": 21,
+        "losses": 34,
+        "winRate": 0.38181818181818183,
+        "return": 0.08455790000000007,
+        "drawdown": -0.07206710538073527,
+        "openSymbols": [
+          "MSB"
+        ],
+        "resultHash": "ae1ae477e1e3bd308780ef1410df0d1f185d75551ac26b74fc6ee8a5f622eb40"
+      },
+      {
+        "name": "trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3
+        },
+        "closed": 60,
+        "wins": 27,
+        "losses": 33,
+        "winRate": 0.45,
+        "return": 0.05871895000000005,
+        "drawdown": -0.059132984164736696,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "MSB"
+        ],
+        "resultHash": "01d4f3c25cc4e848388b0720e3def9b346d755ac5ccdff4ff1bdba5ec119c695"
+      }
+    ],
+    "comparison_stress": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 47,
+        "wins": 18,
+        "losses": 29,
+        "winRate": 0.3829787234042553,
+        "return": 0.0359457700000001,
+        "drawdown": -0.052637937288754946,
+        "openSymbols": [
+          "LPB",
+          "SHB",
+          "MSB"
+        ],
+        "resultHash": "9a1f97da1c6567acaf9e3a3f70a42444f4907fb2a803ea439513f49eaba971e7"
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 67,
+        "wins": 31,
+        "losses": 36,
+        "winRate": 0.4626865671641791,
+        "return": 0.020570720000000042,
+        "drawdown": -0.05978217338807817,
+        "openSymbols": [
+          "LPB",
+          "CEO"
+        ],
+        "resultHash": "25de0795b30b925aab14fbb4fce91f4bb0eda3eaba09185483f196b4ac9d1d1a"
+      },
+      {
+        "name": "trail3",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3
+        },
+        "closed": 53,
+        "wins": 19,
+        "losses": 34,
+        "winRate": 0.3584905660377358,
+        "return": 0.024000369999999993,
+        "drawdown": -0.05436782571312397,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "10cced58495dad7f0d8aeb5dd63e59a31e8834bddefd254b65b8851ce5db22a1"
+      },
+      {
+        "name": "trail2",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 2
+        },
+        "closed": 68,
+        "wins": 23,
+        "losses": 45,
+        "winRate": 0.3382352941176471,
+        "return": 0.004046149999999971,
+        "drawdown": -0.0721002165414721,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "53286db3cb27b916fa69d25d91230f57fa4fa0daa13c4c24086d2ec0b0c4bc03"
+      },
+      {
+        "name": "trend200",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 52,
+        "wins": 19,
+        "losses": 33,
+        "winRate": 0.36538461538461536,
+        "return": 0.09534047000000001,
+        "drawdown": -0.05306225009485371,
+        "openSymbols": [
+          "LPB"
+        ],
+        "resultHash": "7e72f9259b29964cf374f70990bdac9e2cd3ffe2a9154610a4d4f5fa4f209241"
+      },
+      {
+        "name": "trend200_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 58,
+        "wins": 27,
+        "losses": 31,
+        "winRate": 0.46551724137931033,
+        "return": 0.042033119999999924,
+        "drawdown": -0.046080715705306634,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "SHB"
+        ],
+        "resultHash": "3fae5814adeeb2a77d4572e025c0e6184a5826e603451b8db973b75b726252e7"
+      },
+      {
+        "name": "volume1",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 51,
+        "wins": 20,
+        "losses": 31,
+        "winRate": 0.39215686274509803,
+        "return": 0.04665261999999992,
+        "drawdown": -0.08704174416368664,
+        "openSymbols": [],
+        "resultHash": "265651e432d1a44f4c23a2e04f6c3ee2784163f5b400622d8405706b9dfae47d"
+      },
+      {
+        "name": "extension2atr",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 53,
+        "wins": 21,
+        "losses": 32,
+        "winRate": 0.39622641509433965,
+        "return": 0.11451144999999996,
+        "drawdown": -0.0447835605953787,
+        "openSymbols": [
+          "MSB"
+        ],
+        "resultHash": "11f1055a13aee3b59a2589473cbd02bbba39256c41f6563a4063bb393a829951"
+      },
+      {
+        "name": "trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3
+        },
+        "closed": 66,
+        "wins": 31,
+        "losses": 35,
+        "winRate": 0.4696969696969697,
+        "return": 0.044406570000000034,
+        "drawdown": -0.039111229861309084,
+        "openSymbols": [
+          "LPB",
+          "CEO"
+        ],
+        "resultHash": "304ed515aee7feca07c48535f571070efbb6ec60f05bb6e3f3e2ce11e11c746c"
+      }
+    ]
+  },
+  "quality": {
+    "missingEligibleBars": 24
+  },
+  "warnings": [
+    "BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END",
+    "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+    "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+    "EX_POST_VOLUME_CAP",
+    "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+    "FIXED_PARAMETERS_NO_OPTIMIZATION",
+    "FRACTIONAL_BONUS_ROUNDED_DOWN",
+    "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+    "ILLUSTRATIVE_COSTS",
+    "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+    "NO_FORWARD_FILL_MISSING_BARS",
+    "ODD_LOT_RESIDUAL_MARKED_NOT_SOLD",
+    "OPEN_FILL_APPROXIMATION",
+    "OPEN_POSITIONS_MARKED_NOT_LIQUIDATED",
+    "PRICE_INDEX_NOT_TOTAL_RETURN",
+    "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+    "RIGHTS_NOT_EXERCISED_VALUE_ZERO",
+    "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+    "SMALL_TRADE_SAMPLE",
+    "STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED",
+    "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+    "TARGET_DISABLED"
+  ],
+  "verification": {
+    "repeatRuns": 36,
+    "controlLedgersMatched": 6,
+    "pythonTests": 33,
+    "ruff": "PASS",
+    "mypy": "PASS"
+  }
+}
