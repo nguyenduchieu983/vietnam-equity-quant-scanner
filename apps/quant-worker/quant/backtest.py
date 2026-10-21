@@ -46,6 +46,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
     if trail_atr is not None and (config["strategy"] != "S1" or trail_atr not in (2, 3)):
         raise ValueError("INVALID_S1_TRAIL_ATR")
     target_r, breakeven_r = config.get("s1TargetR"), config.get("s1BreakevenR")
+    partial = config.get("s1PartialTarget", False)
+    if partial and (target_r != 1 or trail_atr not in (2, 3) or breakeven_r is not None):
+        raise ValueError("INVALID_PARTIAL_TARGET_CONFIG")
     if any(v is not None and (config["strategy"] != "S1" or v not in (1, 2)) for v in (target_r, breakeven_r)):
         raise ValueError("INVALID_S1_PROFIT_RULE")
     positions: dict[str, dict[str, Any]] = {}
@@ -101,6 +104,8 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
         # Ratchet using only the previous session, before today's action adjustment.
         if trail_atr is not None and idx:
             for symbol, position in positions.items():
+                if partial and not position["runner_active"]:
+                    continue
                 prior = book.get(symbol, {}).get(calendar[idx-1], {})
                 if prior.get("atr14") is not None and prior.get("factor", 0) > 0:
                     candidate_stop = (decimal(prior["close"])-decimal(trail_atr)*decimal(prior["atr14"]))/decimal(prior["factor"])
@@ -133,6 +138,8 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 for key in ("target", "be_trigger"):
                     if key in position:
                         position[key] /= 1+ratio
+                if partial:
+                    position["partial_remaining"] = int(position["partial_remaining"]*(1+ratio)) // rules["board_lot"]*rules["board_lot"]
                 cash_events.append({"session": session, "kind": "STOCK_DIVIDEND_LOCKED", "symbol": event["symbol"],
                                     "quantity": bonus, "available_date": available})
                 warnings.add("STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED")
@@ -153,6 +160,8 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 for key in ("target", "be_trigger"):
                     if key in position:
                         position[key] /= ratio
+                if partial:
+                    position["partial_remaining"] = int(position["partial_remaining"]*ratio) // rules["board_lot"]*rules["board_lot"]
             elif event["type"] == "CASH_DIVIDEND":
                 if event["payable_date"] < session:
                     raise ValueError("UNVERIFIED_DIVIDEND_PAYABLE_DATE")
@@ -196,6 +205,15 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
             locked = sum(q for release, q in position.get("locks", []) if release > idx)
             available_qty = max(0, position["qty"]-locked)
             quantity = min(available_qty, capacity)
+            if partial and target_exit:
+                position["partial_remaining"] = min(position["partial_remaining"], max(0, position["qty"]-rules["board_lot"]) // rules["board_lot"]*rules["board_lot"])
+                quantity = min(quantity, position["partial_remaining"], max(0, position["qty"]-rules["board_lot"]))
+                quantity = quantity // rules["board_lot"]*rules["board_lot"]
+                if position["partial_remaining"] == 0 and price is not None and available_qty >= rules["board_lot"]:
+                    # One-lot positions cannot be halved; keep all and trail from tomorrow.
+                    position["runner_active"] = True
+                    del position["target"]
+                    warnings.add("PARTIAL_BELOW_BOARD_LOT_TRAIL_WHOLE_POSITION")
             if position.get("locks"):
                 quantity = quantity // rules["board_lot"] * rules["board_lot"]
                 if available_qty % rules["board_lot"]:
@@ -214,17 +232,24 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 trades.append({"symbol": symbol, "entry_date": calendar[position["bought"]], "exit_date": session,
                                "quantity": quantity, "entry_price": str(position["entry"]), "exit_price": str(price),
                                "pnl": str(pnl), "fee": str(fee), "tax": str(tax), "dividend_income": str(money(allocated_income)),
-                               "exit_reason": "STOP" if stop_hit else f"EMA{exit_ema}" if strategy_exit else "MAX_HOLD" if held_exit else "TAKE_PROFIT",
+                               "exit_reason": "STOP" if stop_hit else f"EMA{exit_ema}" if strategy_exit else "MAX_HOLD" if held_exit else "PARTIAL_TAKE_PROFIT" if partial else "TAKE_PROFIT",
                                "cash_available_at": calendar[settle_idx] if settle_idx < len(calendar) else None})
                 order.update(status="FILLED", reason=trades[-1]["exit_reason"], quantity=quantity, price=str(price),
                              fee=str(fee), tax=str(tax), slippage_cost=str(abs(price-reference)*quantity))
                 position["cost"] -= cost
                 position["income"] = position.get("income", Decimal(0))-allocated_income
                 position["qty"] -= quantity
+                if partial and target_exit:
+                    position["partial_remaining"] -= quantity
+                    position["runner_active"] = True
+                    if not position["partial_remaining"]:
+                        del position["target"]
                 if not position["qty"]:
                     del positions[symbol]
             elif not quantity:
                 order["reason"] = "SHARES_NOT_AVAILABLE" if not available_qty else "ODD_LOT_NOT_EXECUTABLE" if available_qty < rules["board_lot"] else "VOLUME_CAP"
+                if partial and target_exit and not position["partial_remaining"] and "target" not in position:
+                    order["reason"] = "PARTIAL_BELOW_BOARD_LOT"
             orders.append(order)
         new_entries = 0
         for signal in sorted((s for s in signals if s["side"] == "LONG"), key=lambda s: (-s["score"], s["symbol"])):
@@ -263,6 +288,9 @@ def simulate(payload: dict, config: dict, start: str, end: str, book: dict | Non
                 initial_risk = price-decimal(signal["invalidation_price"])
                 if target_r is not None:
                     positions[symbol]["target"] = price+decimal(target_r)*initial_risk
+                if partial:
+                    positions[symbol]["partial_remaining"] = quantity // (2*rules["board_lot"])*rules["board_lot"]
+                    positions[symbol]["runner_active"] = False
                 if breakeven_r is not None:
                     positions[symbol]["be_trigger"] = price+decimal(breakeven_r)*initial_risk
                 new_entries += 1

@@ -1,0 +1,907 @@
+{
+  "classification": "EXPLORATORY_REUSED_VALIDATION_AND_TEST",
+  "candidates": [
+    {
+      "name": "baseline",
+      "entry": "original",
+      "hold": 30,
+      "trail": null
+    },
+    {
+      "name": "hold15",
+      "entry": "original",
+      "hold": 15,
+      "trail": null
+    },
+    {
+      "name": "partial1_trail2_hold30",
+      "entry": "original",
+      "hold": 30,
+      "trail": 2,
+      "target": 1,
+      "partial": true
+    },
+    {
+      "name": "partial1_trail2_hold15",
+      "entry": "original",
+      "hold": 15,
+      "trail": 2,
+      "target": 1,
+      "partial": true
+    },
+    {
+      "name": "partial1_trail3_hold30",
+      "entry": "original",
+      "hold": 30,
+      "trail": 3,
+      "target": 1,
+      "partial": true
+    },
+    {
+      "name": "partial1_trail3_hold15",
+      "entry": "original",
+      "hold": 15,
+      "trail": 3,
+      "target": 1,
+      "partial": true
+    }
+  ],
+  "periods": {
+    "validation": [
+      "2024-02-15",
+      "2024-06-28"
+    ],
+    "comparison": [
+      "2024-09-04",
+      "2026-10-16"
+    ]
+  },
+  "slippage": {
+    "base": 0.001,
+    "stress": 0.003
+  },
+  "datasetHash": "aadd9e04f75f9d5e068017aecb3df4614d25e475bde5afea6d9335012a533d85",
+  "engineHash": "c5cbd98071b2da97b70e20badb00f4cdc1a7b5339d79fc247024c7ea22a1ff8f",
+  "selection": "At both validation costs: >=8 closed, win rate strictly above baseline and >= hold15, return and drawdown >= BOTH controls; highest minimum validation win rate, then minimum return, then name. Otherwise baseline. Comparison confirmation requires same dominance and >=30 closed at both costs.",
+  "priorStudyNewVariants": 18,
+  "newVariants": 4,
+  "partialSemantics": "50% of entry quantity rounded down to 100-share lots at 1R; leave >=100 shares. Activate previous-close ATR trail only from session after partial fill. One-lot positions skip partial and trail whole position after feasible 1R touch. Unfilled partial budget persists across sessions; corporate actions rescale it. EMA50 and maxHold remain. Stop first on ambiguous bars. No risk/position sizing increase.",
+  "selected": "baseline",
+  "confirmed": false,
+  "results": {
+    "validation_base": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 15,
+        "wins": 6,
+        "losses": 9,
+        "winRate": 0.4,
+        "return": 0.03234347999999998,
+        "drawdown": -0.04467182877165244,
+        "openSymbols": [
+          "LPB",
+          "TCH",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "e225aa1bd25002c91009b55ddebe33b9c72be50871728ad58773e1df3bea4e10",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 18
+        }
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 24,
+        "wins": 11,
+        "losses": 13,
+        "winRate": 0.4583333333333333,
+        "return": 0.012687600000000021,
+        "drawdown": -0.04350358411570212,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "0ee9c35900b77a4c3732bb4a15d178865067e1c5d5d208b3d8ab7870bff16f44",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 25
+        }
+      },
+      {
+        "name": "partial1_trail2_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 19,
+        "wins": 8,
+        "losses": 11,
+        "winRate": 0.42105263157894735,
+        "return": -0.008839999999999959,
+        "drawdown": -0.06753279273596852,
+        "openSymbols": [
+          "TIG",
+          "POW",
+          "CTF"
+        ],
+        "resultHash": "413ca2321732398e5fdc289cbff2fafb3d6687c2a8808eb7495c683c6584328c",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 10,
+          "oneLotEntries": 19
+        }
+      },
+      {
+        "name": "partial1_trail2_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 24,
+        "wins": 11,
+        "losses": 13,
+        "winRate": 0.4583333333333333,
+        "return": 0.004130600000000095,
+        "drawdown": -0.051372428803178626,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "9d8e627b5ae384cad7d41ae95004fbbe2adaba6a1f9114b04bc8a72d42af7102",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 11,
+          "oneLotEntries": 25
+        }
+      },
+      {
+        "name": "partial1_trail3_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 16,
+        "wins": 5,
+        "losses": 11,
+        "winRate": 0.3125,
+        "return": 0.0037912300000000343,
+        "drawdown": -0.05435500981517745,
+        "openSymbols": [
+          "LPB",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "de3c8d94ad9bda9b4bc97e5314ea7a34829d03f5784cd7c03c45eee6f6f3ba0d",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 9,
+          "oneLotEntries": 17
+        }
+      },
+      {
+        "name": "partial1_trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 24,
+        "wins": 11,
+        "losses": 13,
+        "winRate": 0.4583333333333333,
+        "return": 0.017056650000000007,
+        "drawdown": -0.03931996528086158,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB",
+          "CTF"
+        ],
+        "resultHash": "b91ee15c638f6566b5a2505a2b44b6c02d544e96e483fa83e394596949201ed6",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 12,
+          "oneLotEntries": 25
+        }
+      }
+    ],
+    "validation_stress": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 15,
+        "wins": 6,
+        "losses": 9,
+        "winRate": 0.4,
+        "return": 0.007400749999999956,
+        "drawdown": -0.05189613853032103,
+        "openSymbols": [
+          "TCH",
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "0156cdd05dc75a4ff6522f87ba7aa880852dd490db64f7d3ff3a8300826a7e28",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 17
+        }
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 20,
+        "wins": 8,
+        "losses": 12,
+        "winRate": 0.4,
+        "return": 0.0026133399999999085,
+        "drawdown": -0.052266751994094605,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "2d8e15bef3aa3f11d49e8e49afac0df458b36e4c793cbfa8f5cd2b557917bdb1",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 21
+        }
+      },
+      {
+        "name": "partial1_trail2_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 17,
+        "wins": 8,
+        "losses": 9,
+        "winRate": 0.47058823529411764,
+        "return": 0.009577149999999923,
+        "drawdown": -0.04876179566013176,
+        "openSymbols": [
+          "TIG",
+          "POW"
+        ],
+        "resultHash": "91b644f139a9dfefc23e7be424cb95e9ff1a8ffbe2376d2ba08c98c4208ed69e",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 10,
+          "oneLotEntries": 18
+        }
+      },
+      {
+        "name": "partial1_trail2_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 21,
+        "wins": 8,
+        "losses": 13,
+        "winRate": 0.38095238095238093,
+        "return": 0.002275639999999912,
+        "drawdown": -0.052710558209328726,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "edae8d07e2f1c4e88249dc6269347df990a6ab232d8ae05c7d709faad6e40d1f",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 9,
+          "oneLotEntries": 22
+        }
+      },
+      {
+        "name": "partial1_trail3_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 16,
+        "wins": 5,
+        "losses": 11,
+        "winRate": 0.3125,
+        "return": -0.018255750000000015,
+        "drawdown": -0.0626519842370497,
+        "openSymbols": [
+          "TIG",
+          "NTL",
+          "POW"
+        ],
+        "resultHash": "e6300fb0e1571efb549d8a47514fb95d9352bfcf54e2451eb73eb32c9ebdfb87",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 9,
+          "oneLotEntries": 18
+        }
+      },
+      {
+        "name": "partial1_trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 20,
+        "wins": 8,
+        "losses": 12,
+        "winRate": 0.4,
+        "return": 0.00034434000000005405,
+        "drawdown": -0.05475434961503624,
+        "openSymbols": [
+          "LPB",
+          "POW",
+          "TCB"
+        ],
+        "resultHash": "d67010a1d1cddbe280d927c68a98389c5e34c5938e535830c1c875ccd91a4c54",
+        "partialStats": {
+          "executions": 1,
+          "positions": 1,
+          "oneLotFallbacks": 9,
+          "oneLotEntries": 21
+        }
+      }
+    ],
+    "comparison_base": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 45,
+        "wins": 17,
+        "losses": 28,
+        "winRate": 0.37777777777777777,
+        "return": 0.05833109999999997,
+        "drawdown": -0.06620907645807561,
+        "openSymbols": [
+          "LPB",
+          "SHB",
+          "MSB"
+        ],
+        "resultHash": "7a14f323ce227dcd9f6d68a08703a4fbb6fa439f6a975e2c1ff8ad1000cb16f9",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 38
+        }
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001
+        },
+        "closed": 60,
+        "wins": 29,
+        "losses": 31,
+        "winRate": 0.48333333333333334,
+        "return": 0.07642159999999998,
+        "drawdown": -0.055885116476841655,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "MSB"
+        ],
+        "resultHash": "74eb65674e33402f09fde2889fbb1a009592d2a7b30ef44253ad03aec0f64455",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 49
+        }
+      },
+      {
+        "name": "partial1_trail2_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 57,
+        "wins": 24,
+        "losses": 33,
+        "winRate": 0.42105263157894735,
+        "return": 0.03136855000000005,
+        "drawdown": -0.06381204736616013,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "00ac3f521efb75640786081e6b59fe141d5365791774f85504be998c5813ee7e",
+        "partialStats": {
+          "executions": 5,
+          "positions": 5,
+          "oneLotFallbacks": 22,
+          "oneLotEntries": 47
+        }
+      },
+      {
+        "name": "partial1_trail2_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 63,
+        "wins": 32,
+        "losses": 31,
+        "winRate": 0.5079365079365079,
+        "return": 0.06302505000000003,
+        "drawdown": -0.049132269271778876,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "MSB"
+        ],
+        "resultHash": "52da44ea4813fd8b4beaf686173cc3868bf21db8c58a81004ffb5664bf840039",
+        "partialStats": {
+          "executions": 11,
+          "positions": 11,
+          "oneLotFallbacks": 17,
+          "oneLotEntries": 48
+        }
+      },
+      {
+        "name": "partial1_trail3_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 51,
+        "wins": 18,
+        "losses": 33,
+        "winRate": 0.35294117647058826,
+        "return": 0.04055389999999992,
+        "drawdown": -0.056389912259237215,
+        "openSymbols": [
+          "LPB",
+          "MSB"
+        ],
+        "resultHash": "808b7f3f2520fbf6ac18b0b4eac211eea477d81e746ea9758a30aceb7e31b957",
+        "partialStats": {
+          "executions": 6,
+          "positions": 6,
+          "oneLotFallbacks": 21,
+          "oneLotEntries": 42
+        }
+      },
+      {
+        "name": "partial1_trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.001,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 60,
+        "wins": 29,
+        "losses": 31,
+        "winRate": 0.48333333333333334,
+        "return": 0.06269550000000002,
+        "drawdown": -0.05568466511735193,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "MSB"
+        ],
+        "resultHash": "f8612872574d954a63e4f47150e8a78b16f0a4c64d0fbbeb19ae8820b66fa478",
+        "partialStats": {
+          "executions": 10,
+          "positions": 10,
+          "oneLotFallbacks": 18,
+          "oneLotEntries": 46
+        }
+      }
+    ],
+    "comparison_stress": [
+      {
+        "name": "baseline",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 47,
+        "wins": 18,
+        "losses": 29,
+        "winRate": 0.3829787234042553,
+        "return": 0.0359457700000001,
+        "drawdown": -0.052637937288754946,
+        "openSymbols": [
+          "LPB",
+          "SHB",
+          "MSB"
+        ],
+        "resultHash": "9a1f97da1c6567acaf9e3a3f70a42444f4907fb2a803ea439513f49eaba971e7",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 41
+        }
+      },
+      {
+        "name": "hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003
+        },
+        "closed": 67,
+        "wins": 31,
+        "losses": 36,
+        "winRate": 0.4626865671641791,
+        "return": 0.020570720000000042,
+        "drawdown": -0.05978217338807817,
+        "openSymbols": [
+          "LPB",
+          "CEO"
+        ],
+        "resultHash": "25de0795b30b925aab14fbb4fce91f4bb0eda3eaba09185483f196b4ac9d1d1a",
+        "partialStats": {
+          "executions": 0,
+          "positions": 0,
+          "oneLotFallbacks": 0,
+          "oneLotEntries": 51
+        }
+      },
+      {
+        "name": "partial1_trail2_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 63,
+        "wins": 28,
+        "losses": 35,
+        "winRate": 0.4444444444444444,
+        "return": 0.03955170000000008,
+        "drawdown": -0.06252716950201098,
+        "openSymbols": [
+          "LPB"
+        ],
+        "resultHash": "f7488257bec1422f4f45224a1867afa91204b3626917bce8734bdc7ae4a60588",
+        "partialStats": {
+          "executions": 4,
+          "positions": 4,
+          "oneLotFallbacks": 29,
+          "oneLotEntries": 52
+        }
+      },
+      {
+        "name": "partial1_trail2_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 2,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 61,
+        "wins": 31,
+        "losses": 30,
+        "winRate": 0.5081967213114754,
+        "return": 0.06739841999999996,
+        "drawdown": -0.034003066018581926,
+        "openSymbols": [
+          "LPB",
+          "CEO",
+          "MSB"
+        ],
+        "resultHash": "0b948b9bf5db9f1391b5f1f19a68fb7e45c6c64667927b2d9e6d4b23769d5cc2",
+        "partialStats": {
+          "executions": 9,
+          "positions": 9,
+          "oneLotFallbacks": 21,
+          "oneLotEntries": 49
+        }
+      },
+      {
+        "name": "partial1_trail3_hold30",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 30,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 55,
+        "wins": 18,
+        "losses": 37,
+        "winRate": 0.32727272727272727,
+        "return": -0.01272903000000003,
+        "drawdown": -0.06546573607654778,
+        "openSymbols": [
+          "LPB"
+        ],
+        "resultHash": "68effb02c9a07fea1377c4d87b1759f7341d3c7b23a3248a2092c68263120fdd",
+        "partialStats": {
+          "executions": 4,
+          "positions": 4,
+          "oneLotFallbacks": 21,
+          "oneLotEntries": 49
+        }
+      },
+      {
+        "name": "partial1_trail3_hold15",
+        "config": {
+          "strategy": "S1",
+          "capital": 50000000,
+          "maxHold": 15,
+          "minLiquidity": 5000000000.0,
+          "buyFee": 0.0015,
+          "sellFee": 0.0015,
+          "sellTax": 0.001,
+          "slippage": 0.003,
+          "s1TrailAtr": 3,
+          "s1TargetR": 1,
+          "s1PartialTarget": true
+        },
+        "closed": 67,
+        "wins": 32,
+        "losses": 35,
+        "winRate": 0.47761194029850745,
+        "return": 0.02935171999999997,
+        "drawdown": -0.04843082807704223,
+        "openSymbols": [
+          "LPB",
+          "CEO"
+        ],
+        "resultHash": "db238c4b65347eeeb7337d89920bf9fa4d286f769934b9d678b73e03c448b898",
+        "partialStats": {
+          "executions": 10,
+          "positions": 10,
+          "oneLotFallbacks": 20,
+          "oneLotEntries": 51
+        }
+      }
+    ]
+  },
+  "quality": {
+    "missingEligibleBars": 24
+  },
+  "warnings": [
+    "BONUS_AVAILABILITY_UNKNOWN_LOCKED_TO_END",
+    "CORPORATE_ACTION_PAYMENT_DATES_PROVIDER_REPORTED",
+    "DIVIDEND_WITHHOLDING_5PCT_ASSUMPTION",
+    "EX_POST_VOLUME_CAP",
+    "FIXED_100_STOCK_COHORT_SELECTED_2023_12",
+    "FIXED_PARAMETERS_NO_OPTIMIZATION",
+    "FRACTIONAL_BONUS_ROUNDED_DOWN",
+    "HISTORICAL_REVISIONS_NOT_POINT_IN_TIME_ARCHIVED",
+    "ILLUSTRATIVE_COSTS",
+    "ILLUSTRATIVE_SETTLEMENT_AND_TICKS",
+    "NO_FORWARD_FILL_MISSING_BARS",
+    "ODD_LOT_RESIDUAL_MARKED_NOT_SOLD",
+    "OPEN_FILL_APPROXIMATION",
+    "OPEN_POSITIONS_MARKED_NOT_LIQUIDATED",
+    "PARTIAL_BELOW_BOARD_LOT_TRAIL_WHOLE_POSITION",
+    "PRICE_INDEX_NOT_TOTAL_RETURN",
+    "PUBLIC_DATA_NOT_EXCHANGE_CERTIFIED",
+    "RIGHTS_NOT_EXERCISED_VALUE_ZERO",
+    "SECTOR_CLASSIFICATION_CURRENT_SNAPSHOT",
+    "SMALL_TRADE_SAMPLE",
+    "STOCK_DIVIDEND_DISPOSAL_TAX_NOT_MODELED",
+    "SURVIVORSHIP_COVERAGE_NOT_GUARANTEED",
+    "TARGET_DISABLED",
+    "TARGET_MARKET_TRIGGER_ADVERSE_FIRST"
+  ],
+  "verification": {
+    "repeatRuns": 24,
+    "controlLedgersMatched": 8,
+    "pythonTests": 39,
+    "ruff": "PASS",
+    "mypy": "PASS"
+  }
+}

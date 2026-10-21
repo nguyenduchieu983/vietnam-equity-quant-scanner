@@ -143,6 +143,77 @@ class BacktestTests(unittest.TestCase):
         self.assertEqual(result["trades"][0]["quantity"], 200)
         self.assertEqual(result["trades"][0]["pnl"], original["trades"][0]["pnl"])
 
+    def test_partial_target_and_runner_costs_and_causality(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1TargetR": 1,
+                  "s1PartialTarget": True, "s1TrailAtr": 3}
+        def signal(day):
+            state, signals = self.signal(day)
+            for s in signals:
+                s["invalidation_price"] = 9000
+            return state, signals
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM":
+                bar["low"] = "9500"
+                if bar["session_date"] == self.days[5]:
+                    bar.update(open="10500", low="10000", close="10500")
+        self.book["SIM"][self.days[2]] = {"close": 20000, "atr14": 1, "factor": 1}
+        self.book["SIM"][self.days[4]] = {"close": 11000, "atr14": 200, "factor": 1}
+        r = simulate(self.payload, config, self.days[1], self.days[-1], self.book, signal_source=signal)
+        self.assertEqual([t["quantity"] for t in r["trades"]], [100, 100])
+        self.assertEqual([t["exit_reason"] for t in r["trades"]], ["PARTIAL_TAKE_PROFIT", "STOP"])
+        self.assertEqual([t["exit_date"] for t in r["trades"]], [self.days[4], self.days[5]])
+        self.assertEqual(r["trades"][1]["exit_price"], "10400")
+        self.assertEqual(sum(D(t["pnl"]) for t in r["trades"]), D("131650.00"))
+        self.assertEqual(D(r["equity"][-1]["nav"]), D("50131650.00"))
+        from quant.s1_experiments import summarize
+        self.assertEqual(summarize(r, self.days)["closed"], 1)
+        # Before the runner closes, the partial profit must not count as a closed win.
+        short = simulate(self.payload, config, self.days[1], self.days[4], self.book, signal_source=signal)
+        self.assertEqual(summarize(short, self.days)["closed"], 0)
+
+    def test_partial_target_one_lot_is_not_fractionally_sold(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1TargetR": 1,
+                  "s1PartialTarget": True, "s1TrailAtr": 3}
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM":
+                bar["high"] = "12000"
+        self.book["SIM"][self.days[4]] = {"close": 12000, "atr14": 500, "factor": 1}
+        r = self.run_sim(config=config)
+        self.assertEqual(len(r["trades"]), 1)
+        self.assertEqual(r["trades"][0]["quantity"], 100)
+        self.assertEqual(r["trades"][0]["exit_date"], self.days[5])
+        self.assertEqual(r["trades"][0]["exit_reason"], "STOP")
+        self.assertEqual(sum(o["reason"] == "PARTIAL_BELOW_BOARD_LOT" for o in r["orders"]), 1)
+
+    def test_partial_budget_survives_capacity_and_split_without_repeated_halving(self):
+        config = {**self.config, "strategy": "S1", "maxHold": 30, "s1TargetR": 1,
+                  "s1PartialTarget": True, "s1TrailAtr": 3}
+        def signal(day):
+            state, signals = self.signal(day)
+            for s in signals:
+                s["invalidation_price"] = 9500
+            return state, signals
+        for bar in self.payload["bars"]:
+            if bar["symbol"] == "SIM":
+                bar["low"] = "9800"
+                if bar["session_date"] in self.days[4:6]:
+                    bar["volume"] = 2000  # participation cap = 100 shares
+        r = simulate(self.payload, config, self.days[1], self.days[-1], self.book, signal_source=signal)
+        self.assertEqual([t["quantity"] for t in r["trades"]], [100, 100])
+        self.assertEqual(r["open_positions"]["SIM"]["qty"], 300)
+        self.assertNotIn("target", r["open_positions"]["SIM"])
+        payload = copy.deepcopy(self.payload)
+        payload["actions"] = [{"symbol": "SIM", "type": "SPLIT", "ratio": 2,
+                               "ex_date": self.days[5], "known_at": self.days[0]}]
+        for bar in payload["bars"]:
+            if bar["symbol"] == "SIM" and bar["session_date"] >= self.days[5]:
+                for key in ("open", "high", "low", "close", "floor", "ceiling"):
+                    bar[key] = str(D(bar[key])/2)
+        split = simulate(payload, config, self.days[1], self.days[-1], self.book, signal_source=signal)
+        self.assertEqual([t["quantity"] for t in split["trades"]], [100, 100, 100])
+        self.assertEqual(split["open_positions"]["SIM"]["qty"], 600)
+        self.assertNotIn("target", split["open_positions"]["SIM"])
+
     def test_ticks_limits_and_risk_caps(self):
         self.assertEqual(tick_price(D(10001), "HOSE", "BUY", self.days[0]), D(10050))
         self.assertEqual(tick_price(D(10001), "HOSE", "SELL", self.days[0]), D(10000))
